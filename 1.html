@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ai Là Triệu Phú - Muối Của Rừng</title>
+    <style>
+        /* --- 1. CẤU HÌNH CHUNG & MÀU SẮC --- */
+        :root {
+            --primary-bg: radial-gradient(circle at center, #1e2545 0%, #050510 100%);
+            --gold-gradient: linear-gradient(to bottom, #fffacd, #f0ad4e 50%, #8a6d3b);
+            --gold-color: #f0ad4e;
+            --blue-box: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+            --text-white: #ffffff;
+            --danger-color: #ff4444;
+            
+            /* Responsive Fonts (Tự động co giãn theo màn hình) */
+            --font-huge: clamp(3rem, 6vw, 7rem);
+            --font-big: clamp(1.5rem, 3.5vw, 4rem); /* Giảm nhẹ font câu hỏi để vừa nội dung dài */
+            --font-medium: clamp(1rem, 2vw, 2rem);
+            --font-normal: clamp(1rem, 1.5vw, 1.8rem);
+        }
+
+        body {
+            font-family: 'Verdana', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        /* Hiệu ứng kịch tính */
+        body.drama-mode { animation: backgroundFlash 0.5s infinite alternate; }
+        @keyframes backgroundFlash {
+            from { background: radial-gradient(circle at center, #1e2545 0%, #050510 100%); }
+            to { background: radial-gradient(circle at center, #2c0a0a 0%, #000 100%); }
+        }
+
+        .is-hidden { display: none !important; }
+
+        /* --- 2. NÚT BẤM --- */
+        .btn-action {
+            cursor: pointer; font-size: var(--font-normal); 
+            padding: 15px 40px; margin: 20px;
+            border-radius: 50px; 
+            border: 2px solid #fff;
+            background: var(--gold-gradient); 
+            color: #2c1b05;
+            font-weight: 900; text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(240, 173, 78, 0.6);
+            transition: all 0.2s;
+        }
+        .btn-action:hover { transform: scale(1.1); filter: brightness(1.2); }
+        .btn-secondary { background: #444; color: #fff; border-color: #999; box-shadow: none; }
+
+        .btn-next-external {
+            position: fixed; bottom: 2vh; right: 2vw;
+            width: clamp(60px, 8vw, 90px); height: clamp(60px, 8vw, 90px);
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000);
+            color: #fff; border: 3px solid #fff; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            text-decoration: none; font-weight: bold; font-size: var(--font-normal);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            z-index: 9999; animation: pulseBtn 2s infinite;
+        }
+        @keyframes pulseBtn { 0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); } }
+
+        /* --- 3. CONTAINER CHUYỂN CẢNH --- */
+        .screen-container {
+            position: absolute; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            transition: all 0.6s ease;
+        }
+        .slide-out-left { transform: translateX(-150%); opacity: 0; pointer-events: none; }
+        .slide-in-right { transform: translateX(150%); opacity: 0; pointer-events: none; }
+        .slide-center { transform: translateX(0); opacity: 1; pointer-events: auto; }
+
+        /* --- 4. VÒNG QUAY (3D DIGITAL STYLE) --- */
+        .wheel-container {
+            width: 60vw; height: 40vh;
+            background: linear-gradient(90deg, #000 0%, #222 20%, #222 80%, #000 100%);
+            border: 6px solid #555; 
+            border-radius: 15px;
+            overflow: hidden; margin: 2vh auto; position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 60px #000;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        /* Hiệu ứng viền phát sáng khi quay */
+        .wheel-container.spinning {
+            border-color: #ffcc00;
+            box-shadow: 0 0 50px #ffcc00, inset 0 0 30px #ffcc00;
+            animation: borderFlash 0.2s infinite alternate;
+        }
+        @keyframes borderFlash {
+            from { border-color: #ffcc00; box-shadow: 0 0 30px #ffcc00; }
+            to { border-color: #fff; box-shadow: 0 0 60px #fff; }
+        }
+
+        .wheel-container::before, .wheel-container::after {
+            content: ""; position: absolute; left: 0; right: 0; height: 30%; z-index: 2; pointer-events: none;
+        }
+        .wheel-container::before { top: 0; background: linear-gradient(to bottom, #000, transparent); }
+        .wheel-container::after { bottom: 0; background: linear-gradient(to top, #000, transparent); }
+
+        .wheel-pointer {
+            position: absolute; top: 50%; left: 0; width: 100%; height: 20%;
+            transform: translateY(-50%);
+            background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1));
+            border-top: 2px solid var(--gold-color);
+            border-bottom: 2px solid var(--gold-color);
+            box-shadow: 0 0 20px rgba(240, 173, 78, 0.3);
+            z-index: 3;
+            backdrop-filter: brightness(1.5);
+        }
+
+        #names-list { list-style: none; padding: 0; margin: 0; }
+        #names-list li { 
+            height: 8vh; 
+            display: flex; align-items: center; justify-content: center;
+            font-size: var(--font-big); font-weight: 900; text-transform: uppercase;
+            color: #777; transition: color 0.3s;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* --- 5. CÂU HỎI & ĐÁP ÁN (HEXAGON STYLE) --- */
+        #quiz-screen { width: 95vw; height: 100vh; padding: 2vh 0; box-sizing: border-box; display: flex; flex-direction: column; }
+        
+        .top-bar { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 1vh; padding-right: 2vw; box-sizing: border-box;}
+
+        .question-box {
+            background: var(--blue-box);
+            border: 2px solid var(--gold-color);
+            padding: 0 4vw; margin: 0 auto 3vh auto;
+            text-align: center; display: flex; align-items: center; justify-content: center;
+            width: 90vw; flex: 1.2; position: relative;
+            clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
+        }
+        
+        .question-box::before {
+            content: ""; position: absolute; inset: 0; z-index: -1;
+            background: var(--gold-color);
+            clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
+            transform: scale(1.01);
+        }
+
+        #question-text { font-size: var(--font-big); font-weight: bold; line-height: 1.3; text-shadow: 2px 2px 0 #000; color: #fff; }
+
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2vh 4vw; height: 40vh; width: 90vw; margin: 0 auto; }
+
+        .answer-btn {
+            background: var(--blue-box); color: white; 
+            font-size: var(--font-medium); text-align: left; padding: 0 3vw 0 1vw;
+            cursor: pointer; transition: all 0.2s; position: relative; 
+            display: flex; align-items: center;
+            clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
+            border: none;
+        }
+
+        .answer-btn::after {
+            content: ""; position: absolute; inset: 0; z-index: -1;
+            background: #666;
+            clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
+            transform: scale(1.02); transition: background 0.3s;
+        }
+
+        .answer-btn:hover::after { background: var(--gold-color); }
+        .answer-btn:hover span { color: #fff; }
+        .answer-btn span { color: var(--gold-color); font-weight: bold; margin-right: 15px; margin-left: 2vw; font-size: 1.2em; flex-shrink: 0;}
+        .answer-btn.correct { background: #006400 !important; } .answer-btn.correct::after { background: #00ff00 !important; animation: glowGreen 1s infinite alternate; }
+        .answer-btn.incorrect { background: #550000 !important; } .answer-btn.incorrect::after { background: red !important; }
+        .answer-btn.removed { opacity: 0; pointer-events: none; }
+        @keyframes glowGreen { from { box-shadow: 0 0 10px #00ff00; } to { box-shadow: 0 0 30px #00ff00; } }
+
+        /* --- 6. THANG TIỀN (PRO CENTERED) --- */
+        #money-screen { z-index: 100; }
+
+        .money-card {
+            background: rgba(0, 0, 0, 0.95); 
+            border: 3px solid var(--gold-color); 
+            border-radius: 20px; 
+            height: 95vh; width: clamp(350px, 50vw, 600px); 
+            padding: 20px 0; 
+            box-shadow: 0 0 50px rgba(240, 173, 78, 0.3); 
+            display: flex; flex-direction: column; justify-content: center;
+        }
+
+        .money-list { 
+            list-style: none; padding: 0 20px; margin: 0; 
+            display: flex; flex-direction: column-reverse; 
+            height: 100%; justify-content: space-between; 
+        }
+
+        .money-list li {
+            display: flex; justify-content: center; align-items: center;
+            font-size: clamp(1rem, 2.5vh, 2rem); 
+            color: #888; border-radius: 50px; padding: 5px 0;
+            transition: all 0.3s ease; position: relative;
+        }
+
+        .money-idx { display: inline-block; width: 40px; text-align: right; margin-right: 15px; font-weight: normal; }
+        .money-val { display: inline-block; width: 220px; text-align: left; font-weight: bold; }
+
+        .money-list li.safe { color: #fff; }
+        .money-list li.safe .money-idx { color: var(--gold-color); }
+
+        .money-list li.active {
+            background: linear-gradient(90deg, #d98d26, #f0ad4e, #d98d26);
+            color: #000 !important; font-weight: 900;
+            transform: scale(1.1); box-shadow: 0 0 25px rgba(240, 173, 78, 0.8);
+            z-index: 2; border: 2px solid #fff;
+        }
+        .money-list li.active .money-idx, .money-list li.active .money-val { color: #000; }
+
+        /* --- 7. BẢNG XẾP HẠNG & WINNER --- */
+        #winner-overlay, #ranking-overlay, #result-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        #winner-name-big { 
+            font-size: var(--font-huge); 
+            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-weight: 900; text-transform: uppercase; filter: drop-shadow(0 0 20px rgba(240,173,78,0.5));
+        }
+
+        .ranking-table { width: 90vw; border-collapse: collapse; margin: 2vh 0; font-size: var(--font-medium); border: 1px solid var(--gold-color); }
+        .ranking-table th { background: var(--gold-color); color: #000; padding: 15px; }
+        .ranking-table td { border: 1px solid #555; padding: 10px; text-align: center; color: #fff; }
+
+        /* --- 8. KẾT QUẢ (BIG TEXT FIX) --- */
+        .result-box {
+            background: var(--blue-box); border: 4px solid var(--gold-color);
+            padding: 5vh; border-radius: 30px; text-align: center; width: 80vw;
+        }
+        .result-title { 
+            font-size: clamp(3rem, 6vw, 6rem); font-weight: 900; text-transform: uppercase; margin-bottom: 10px;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .result-name { 
+            font-size: clamp(2.5rem, 5vw, 5rem); color: #fff; font-weight: 900; 
+            margin: 10px 0; text-transform: uppercase; text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+        }
+        #res-score { font-size: clamp(1.8rem, 3vw, 3.5rem); color: #ddd; margin-bottom: 20px; font-weight: bold; }
+        .result-money { 
+            font-size: clamp(3.5rem, 7vw, 8rem); color: var(--gold-color); font-weight: 900; 
+            margin: 30px 0; text-shadow: 0 0 30px rgba(240, 173, 78, 0.6);
+        }
+
+    </style>
+</head>
+<body>
+
+    <a href="ket_thuc.html" class="btn-next-external" target="_blank" title="Chuyển web">NEXT &#10148;</a>
+
+    <audio id="sound-bg" loop><source src="https://www.soundjay.com/misc/sounds/wind-chime-1.mp3" type="audio/mpeg"></audio>
+    <audio id="sound-correct"><source src="https://www.soundjay.com/human/sounds/applause-01.mp3" type="audio/mpeg"></audio>
+    <audio id="sound-wrong"><source src="https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3" type="audio/mpeg"></audio>
+
+    <div id="spinner-screen" class="screen-container slide-center">
+        <h1 style="color: var(--gold-color); font-size: var(--font-huge); text-shadow: 0 5px 10px #000; text-align: center; margin-bottom: 0;">AI LÀ TRIỆU PHÚ</h1>
+        
+        <div class="wheel-container">
+            <div class="wheel-pointer"></div>
+            <ul id="names-list"></ul>
+        </div>
+        
+        <button class="btn-action" id="spin-btn" onclick="spinWheel()">QUAY NGAY</button>
+    </div>
+
+    <div id="winner-overlay" class="is-hidden">
+        <h2 style="color: #fff; font-size: var(--font-medium);">NGƯỜI CHƠI CHÍNH THỨC</h2>
+        <div id="winner-name-big">TÊN</div>
+    </div>
+
+    <div id="ranking-overlay" class="is-hidden">
+        <h1 style="color: var(--gold-color); font-size: var(--font-big);">🏆 BẢNG VINH DANH 🏆</h1>
+        <table class="ranking-table">
+            <thead><tr><th>Hạng</th><th>Tên</th><th>Kết quả</th><th>Tiền thưởng</th></tr></thead>
+            <tbody id="ranking-body"></tbody>
+        </table>
+        <div>
+            <button class="btn-action" onclick="startFromRanking()">VÀO GAME</button>
+            <button class="btn-action btn-secondary" onclick="resetRanking()">RESET</button>
+        </div>
+    </div>
+
+    <div id="money-screen" class="screen-container is-hidden">
+        <div class="money-card"><ul class="money-list" id="money-list"></ul></div>
+    </div>
+
+    <div id="quiz-screen" class="screen-container is-hidden">
+        <div class="top-bar">
+            <button id="btn-5050" class="btn-action" style="border-radius: 50%; width: clamp(70px, 9vw, 100px); height: clamp(70px, 9vw, 100px); padding: 0; display:flex; align-items:center; justify-content:center;" onclick="use5050()">50:50</button>
+        </div>
+        
+        <div class="question-box">
+            <div id="question-text">Nội dung câu hỏi hiển thị ở đây?</div>
+        </div>
+        
+        <div class="answers-grid" id="answers-container">
+            </div>
+    </div>
+
+    <div id="result-overlay" class="is-hidden">
+        <div class="result-box">
+            <div class="result-title" id="res-title">...</div>
+            <div class="result-name" id="res-name">...</div>
+            <div id="res-score">...</div>
+            <div class="result-money" id="res-money">0</div>
+            <button class="btn-action" onclick="location.reload()">VỀ TRANG CHỦ</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. DANH SÁCH TÊN HỌC SINH (MỚI) ---
+        const names = [
+            "Thuý Anh", "Kỳ Anh", "Việt Anh", "Phương Anh", "Bắc", "Cúc",
+            "Dung", "Đăng", "Hà", "Hiệp", "Hồng", "Nguyễn Huy", "Dương Hương",
+            "Kiều", "Lan", "Hoàng Ly", "Nguyễn Ly", "Trà Mai", "Xuân Mai",
+            "Minh", "Nam", "Niên", "Nguyễn Phương", "Vũ Phương", "Thanh",
+            "Thành", "Thu", "Thùy", "Thúy", "Trưởng", "Tuyên", "Tuyết"
+        ];
+
+        // --- 2. DỮ LIỆU TIỀN THƯỞNG ---
+        const moneyLevels = ["200.000", "400.000", "600.000", "1.000.000", "2.000.000", "3.000.000", "6.000.000", "10.000.000", "14.000.000", "22.000.000", "30.000.000", "40.000.000", "60.000.000", "85.000.000", "150.000.000"];
+        const safeLevels = [4, 9, 14]; 
+
+        // --- 3. NGÂN HÀNG 30 CÂU HỎI "MUỐI CỦA RỪNG" ---
+        const questionsData = [
+            { q: "Tác phẩm “Muối của rừng” được viết bởi tác giả nào?", o: ["Tô Hoài", "Nguyễn Minh Châu", "Nguyễn Huy Thiệp", "Ma Văn Kháng"], c: 2 },
+            { q: "Nghề nghiệp của ông Diểu là gì?", o: ["Chăn thả gia súc", "Làm nương rẫy", "Đi săn", "Làm gỗ"], c: 2 },
+            { q: "Loài vật xuất hiện trong truyện là gì?", o: ["Khỉ", "Vượn", "Hổ", "Nai"], c: 1 },
+            { q: "Sự kiện mở đầu truyện là gì?", o: ["Trận cháy rừng", "Ông Diểu về bản", "Ông Diểu gặp con vượn đực", "Vượn cái cứu ông Diểu"], c: 2 },
+            { q: "Vì sao con vượn đực chết?", o: ["Bị thú rừng tấn công", "Bị lửa thiêu", "Bị người dân bắn", "Bị ông Diểu bắn nhầm"], c: 3 },
+            { q: "Con vượn cái đã làm gì khi thấy con vượn đực chết?", o: ["Tấn công ông Diểu", "Tru lên đau đớn và ôm xác bạn", "Bỏ chạy vào rừng", "Kêu gọi đàn vượn khác"], c: 1 },
+            { q: "Con vượn cái đã phá điều gì của ông Diểu?", o: ["Lều trú", "Hòm đồ", "Bẫy thú", "Súng"], c: 2 },
+            { q: "Cao trào của truyện là sự kiện nào?", o: ["Con vượn cái phá bẫy", "Cháy rừng và vượn cứu người", "Ông Diểu đặt bẫy", "Vượn cái nhìn ông Diểu"], c: 1 },
+            { q: "“Muối của rừng” trong truyện có ý nghĩa biểu tượng cho:", o: ["Thức ăn của thú rừng", "Bệnh rừng", "Giá trị tinh thần từ thiên nhiên", "Một loại cây đặc biệt"], c: 2 },
+            { q: "Truyện ngắn thuộc thể loại:", o: ["Hồi kí", "Tùy bút", "Truyện ngắn hiện đại", "Kí sự"], c: 2 },
+            { q: "Hành động phá bẫy của vượn cái thể hiện điều gì?", o: ["Sự thù hằn muốn giết người", "Sự thông minh và cảnh báo", "Sự hoảng loạn", "Bản năng sinh tồn"], c: 1 },
+            { q: "Vì sao ông Diểu cảm thấy tội lỗi?", o: ["Vì mất đồ", "Vì nghĩ mình đặt bẫy sai", "Vì bắn chết con vượn đực vô cớ", "Vì bị vượn cái theo dõi"], c: 2 },
+            { q: "Trong truyện, thiên nhiên được khắc họa chủ yếu bằng biện pháp nào?", o: ["Nhân hóa", "So sánh", "Hoán dụ", "Nói quá"], c: 0 },
+            { q: "Sự hi sinh của vượn cái cho thấy phẩm chất gì?", o: ["Con vật có lòng bao dung", "Con vật ngu ngốc", "Con vật hung hãn", "Con vật thích báo thù"], c: 0 },
+            { q: "Tư tưởng chủ đạo của tác phẩm là gì?", o: ["Khuyên con người ăn chay", "Phê phán các thợ săn", "Tôn vinh muối của rừng", "Ca ngợi thiên nhiên và lương tri"], c: 3 },
+            { q: "Ý nghĩa của tình huống truyện “con vật cứu kẻ giết bạn mình”:", o: ["Tạo không khí hài hước", "Tạo bước ngoặt nhận thức", "Làm tăng số lượng nhân vật", "Kéo dài diễn biến"], c: 1 },
+            { q: "Vì sao rừng được gọi là “một thế giới vừa gắn bó vừa xa lạ”?", o: ["Vì ông Diểu không hiểu hết rừng", "Vì rừng không có sự sống", "Vì rừng luôn chào đón con người", "Vì rừng toàn thú dữ"], c: 0 },
+            { q: "Hình ảnh vượn cái nhìn ông Diểu từ xa mang ý nghĩa:", o: ["Rình tấn công", "Muốn kết bạn", "Sự đau đớn và trách móc", "Sợ hãi"], c: 2 },
+            { q: "Tại sao truyện có tên “Muối của rừng”?", o: ["Vì rừng có muối thật", "Vì muối là thức ăn cho thú", "Tượng trưng cho giá trị nhân bản", "Vì ông Diểu đi lấy muối"], c: 2 },
+            { q: "Truyện khắc họa sự đổi thay nào ở ông Diểu?", o: ["Từ tự tin → kiêu ngạo", "Từ vô cảm → nhân tính", "Từ yếu đuối → mạnh mẽ", "Từ giận dữ → vui vẻ"], c: 1 },
+            { q: "Bài học lớn nhất mà ông Diểu nhận ra là gì?", o: ["Rừng nhiều thú dữ", "Người thợ săn phải bắn chính xác", "Thiên nhiên có tình nghĩa", "Không nên đi rừng một mình"], c: 2 },
+            { q: "Nếu thiếu tình huống con vượn cứu người, truyện mất yếu tố gì?", o: ["Cao trào và giá trị nhân văn", "Sự xuất hiện của dân bản", "Mâu thuẫn kịch tính", "Miêu tả rừng"], c: 0 },
+            { q: "Tác phẩm gửi đến thông điệp nào cho con người?", o: ["Cần mạnh mẽ trước thiên nhiên", "Sống hòa hợp, tôn trọng muôn loài", "Săn bắt để tồn tại", "Nên dùng nhiều bẫy hơn"], c: 1 },
+            { q: "Sự đối lập giữa “giết” và “cứu” nhằm nhấn mạnh:", o: ["Sự may mắn của ông Diểu", "Quy luật báo ứng", "Sức mạnh của lòng bao dung", "Quy luật tự nhiên"], c: 2 },
+            { q: "Vượn cái có thể được xem như biểu tượng của:", o: ["Sự trả thù của tự nhiên", "Sự hủy diệt thiên nhiên", "Lòng nhân ái của thiên nhiên", "Sự hoảng loạn của loài vật"], c: 2 },
+            { q: "Hành động vượn cái phá bẫy có thể hiểu là:", o: ["Lời cảnh báo cho ông Diểu", "Muốn phá rừng", "Tính nghịch ngợm của vượn", "Sự nông nổi của nó"], c: 0 },
+            { q: "Chọn nhận xét đúng nhất về nhân vật ông Diểu:", o: ["Ông là người độc ác", "Ông vô cảm từ đầu đến cuối", "Biết thức tỉnh và hối lỗi", "Ông thù hằn loài vượn"], c: 2 },
+            { q: "Dòng nào nói đúng nhất về ý nghĩa của truyện?", o: ["Khẳng định sức mạnh con người", "Sự giao cảm người và thiên nhiên", "Phê phán thú dữ rừng xanh", "Ca ngợi săn bắn"], c: 1 },
+            { q: "Chi tiết vượn cái hi sinh cho thấy thông điệp gì?", o: ["Rừng cần được bảo vệ", "Rừng không quan trọng", "Rừng nên bị khai thác nhanh hơn", "Rừng chỉ dành cho thú"], c: 0 },
+            { q: "Tên truyện “Muối của rừng” giúp hiểu rằng:", o: ["Thiên nhiên có vị mặn thật", "Rừng là nơi nguy hiểm", "Rừng dạy giá trị tinh thần bền vững", "Đi rừng phải mang theo muối"], c: 2 }
+        ];
+
+        let currentPlayer = "", currentQIndex = -1, currentQuestions = [], isLocked = false;
+
+        // --- 4. THUẬT TOÁN SHUFFLE (Trộn mảng) ---
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function init() {
+            const ul = document.getElementById('names-list');
+            ul.innerHTML = ''; 
+            // Nhân bản tên để tạo vòng lặp
+            for(let i=0; i<3; i++) names.forEach(n => {
+                let li = document.createElement('li');
+                li.textContent = n;
+                li.style.height = '8vh';
+                ul.appendChild(li);
+            });
+
+            const ml = document.getElementById('money-list');
+            ml.innerHTML = '';
+            moneyLevels.forEach((m, i) => {
+                let li = document.createElement('li');
+                li.innerHTML = `<span class="money-idx">${i+1}</span> <span class="money-val">${m}</span>`;
+                li.dataset.idx = i;
+                if(safeLevels.includes(i)) li.classList.add('safe');
+                ml.appendChild(li);
+            });
+            if(!localStorage.getItem('altp_ranking')) localStorage.setItem('altp_ranking', '[]');
+        }
+        init();
+
+        function spinWheel() {
+            document.getElementById('spin-btn').disabled = true;
+            try { document.getElementById('sound-bg').play(); } catch(e){}
+            const winnerIdx = Math.floor(Math.random() * names.length);
+            currentPlayer = names[winnerIdx];
+            
+            // Hiệu ứng kịch tính
+            document.body.classList.add('drama-mode');
+            document.querySelector('.wheel-container').classList.add('spinning');
+
+            const wheelContainer = document.querySelector('.wheel-container');
+            const itemHeight = wheelContainer.clientHeight / 5; 
+            const stopIndex = (3 * names.length) + winnerIdx;
+            const stopPos = (stopIndex * itemHeight) - (wheelContainer.clientHeight / 2) + (itemHeight / 2);
+            
+            const ul = document.getElementById('names-list');
+            // Quay chậm 8 giây
+            ul.style.transition = 'transform 6s cubic-bezier(0.1, 0, 0, 1)';
+            ul.style.transform = `translateY(-${stopPos}px)`;
+
+            setTimeout(() => {
+                document.getElementById('sound-bg').pause();
+                try { document.getElementById('sound-correct').play(); } catch(e){}
+                
+                document.body.classList.remove('drama-mode');
+                document.querySelector('.wheel-container').classList.remove('spinning');
+
+                document.getElementById('winner-overlay').classList.remove('is-hidden');
+                document.getElementById('winner-name-big').textContent = currentPlayer;
+                setTimeout(() => {
+                    document.getElementById('winner-overlay').classList.add('is-hidden');
+                    showRanking(true);
+                }, 2500);
+            }, 6100); // 8.1 giây
+        }
+
+        function showRanking(show) {
+            const overlay = document.getElementById('ranking-overlay');
+            if(show) {
+                const tbody = document.getElementById('ranking-body');
+                tbody.innerHTML = '';
+                let data = JSON.parse(localStorage.getItem('altp_ranking') || '[]');
+                if(data.length === 0) tbody.innerHTML = '<tr><td colspan="4">Chưa có dữ liệu</td></tr>';
+                else {
+                    data.forEach((item, idx) => tbody.innerHTML += `<tr><td>${idx + 1}</td><td>${item.name}</td><td>${item.score}</td><td>${item.money}</td></tr>`);
+                }
+                overlay.classList.remove('is-hidden');
+            } else { overlay.classList.add('is-hidden'); }
+        }
+        function startFromRanking() { showRanking(false); startGame(); }
+        function resetRanking() { if(confirm("Xóa sạch?")) { localStorage.removeItem('altp_ranking'); showRanking(true); } }
+
+        function startGame() {
+            // 1. Trộn thứ tự câu hỏi
+            let shuffledQs = shuffle([...questionsData]);
+            
+            // 2. Trộn vị trí đáp án
+            currentQuestions = shuffledQs.map(q => {
+                const correctAnswerText = q.o[q.c];
+                const shuffledOptions = shuffle([...q.o]);
+                const newCorrectIndex = shuffledOptions.indexOf(correctAnswerText);
+                return { q: q.q, o: shuffledOptions, c: newCorrectIndex };
+            });
+
+            currentQIndex = -1;
+            const spinner = document.getElementById('spinner-screen');
+            spinner.classList.remove('slide-center'); spinner.classList.add('slide-out-left');
+            setTimeout(() => { spinner.classList.add('is-hidden'); nextLevel(); }, 600);
+        }
+
+        function nextLevel() {
+            currentQIndex++;
+            if (currentQIndex >= currentQuestions.length) { gameOver(true); return; }
+            if (currentQIndex > 0) showMoneyAnimation(); else showQuizScreenDirectly();
+        }
+
+        function showMoneyAnimation() {
+            const ms = document.getElementById('money-screen');
+            const qs = document.getElementById('quiz-screen');
+            qs.classList.add('is-hidden'); qs.classList.remove('slide-center');
+            ms.classList.remove('is-hidden', 'slide-out-left', 'slide-center');
+            ms.classList.add('slide-in-right');
+
+            document.querySelectorAll('#money-list li').forEach(li => li.classList.remove('active', 'flash'));
+            const prevIdx = currentQIndex - 1;
+            if(prevIdx >= 0) document.querySelector(`li[data-idx="${prevIdx}"]`).classList.add('active');
+
+            setTimeout(() => {
+                ms.classList.remove('slide-in-right'); ms.classList.add('slide-center');
+                setTimeout(() => {
+                    if(prevIdx >= 0) document.querySelector(`li[data-idx="${prevIdx}"]`).classList.remove('active');
+                    const curLi = document.querySelector(`li[data-idx="${currentQIndex}"]`);
+                    if(curLi) { curLi.classList.add('active', 'flash'); curLi.scrollIntoView({behavior: "smooth", block: "center"}); }
+                }, 600);
+                setTimeout(() => {
+                    ms.classList.remove('slide-center'); ms.classList.add('slide-out-left');
+                    setTimeout(() => { ms.classList.add('is-hidden'); ms.classList.remove('slide-out-left'); showQuizScreenDirectly(); }, 3000);
+                }, 5000);
+            }, 50);
+        }
+
+        function showQuizScreenDirectly() {
+            const qs = document.getElementById('quiz-screen');
+            loadQuestionUI();
+            qs.classList.remove('is-hidden', 'slide-out-left', 'slide-center');
+            qs.classList.add('slide-in-right');
+            setTimeout(() => { qs.classList.remove('slide-in-right'); qs.classList.add('slide-center'); }, 50);
+        }
+
+        function loadQuestionUI() {
+            isLocked = false;
+            const q = currentQuestions[currentQIndex];
+            document.getElementById('question-text').textContent = q.q;
+            const grid = document.getElementById('answers-container');
+            grid.innerHTML = '';
+            const labels = ["A", "B", "C", "D"];
+            q.o.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.innerHTML = `<span>${labels[i]}:</span> ${opt}`;
+                btn.onclick = () => checkAnswer(i, q.c, btn);
+                grid.appendChild(btn);
+            });
+            const btn5050 = document.getElementById('btn-5050');
+            if(btn5050.dataset.used === "true") { btn5050.disabled = true; btn5050.style.opacity = 0.5; } 
+            else { btn5050.disabled = false; btn5050.style.opacity = 1; }
+        }
+
+        function checkAnswer(idx, correct, btn) {
+            if(isLocked) return; isLocked = true;
+            if (idx === correct) {
+                btn.classList.add('correct');
+                try { document.getElementById('sound-correct').play(); } catch(e){}
+                setTimeout(() => {
+                    const qs = document.getElementById('quiz-screen');
+                    qs.classList.remove('slide-center'); qs.classList.add('slide-out-left');
+                    setTimeout(() => { qs.classList.add('is-hidden'); nextLevel(); }, 800);
+                }, 2000);
+            } else {
+                btn.classList.add('incorrect');
+                document.querySelectorAll('.answer-btn')[correct].classList.add('correct');
+                try { document.getElementById('sound-wrong').play(); } catch(e){}
+                setTimeout(() => gameOver(false), 2500);
+            }
+        }
+
+        function gameOver(isWin) {
+            let prize = "0"; let safeIndex = -1; const reachedIndex = currentQIndex - 1;
+            if (isWin) prize = moneyLevels[moneyLevels.length - 1];
+            else {
+                for(let i = safeLevels.length - 1; i >= 0; i--) { if (reachedIndex >= safeLevels[i]) { safeIndex = safeLevels[i]; break; } }
+                if (safeIndex !== -1) prize = moneyLevels[safeIndex];
+            }
+            let data = JSON.parse(localStorage.getItem('altp_ranking') || '[]');
+            data.push({ name: currentPlayer, score: `${isWin ? currentQuestions.length : currentQIndex}/${currentQuestions.length}`, money: prize });
+            data.sort((a, b) => parseInt(b.money.replace(/\./g,'')) - parseInt(a.money.replace(/\./g,'')));
+            localStorage.setItem('altp_ranking', JSON.stringify(data));
+
+            const resOverlay = document.getElementById('result-overlay');
+            const titleEl = document.getElementById('res-title');
+            if (isWin) { titleEl.textContent = "VÔ ĐỊCH!"; titleEl.style.color = "#00ff00"; } 
+            else { titleEl.textContent = "DỪNG CUỘC CHƠI"; titleEl.style.color = "#ff4444"; }
+            document.getElementById('res-name').textContent = currentPlayer;
+            document.getElementById('res-score').textContent = `Kết quả: Đúng ${isWin ? currentQuestions.length : currentQIndex} câu`;
+            document.getElementById('res-money').textContent = prize + " VNĐ";
+            document.getElementById('quiz-screen').classList.add('is-hidden');
+            resOverlay.classList.remove('is-hidden');
+        }
+
+        function use5050() {
+            const btn = document.getElementById('btn-5050');
+            if(isLocked || btn.disabled) return;
+            const q = currentQuestions[currentQIndex];
+            const btns = document.querySelectorAll('.answer-btn');
+            let wrongs = [0,1,2,3].filter(i => i !== q.c).sort(()=>Math.random()-0.5);
+            wrongs.slice(0,2).forEach(i => btns[i].classList.add('removed'));
+            btn.disabled = true; btn.style.opacity = 0.5; btn.dataset.used = "true";
+        }
+    </script>
+</body>
+</html>

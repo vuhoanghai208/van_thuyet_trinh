@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create by-VuHoangHai</title>
+<style>
+  body {
+    background-color: #050505;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    overflow: hidden;
+  }
+
+  h1 {
+    position: relative;
+    font-size: 64px; /* Đã tăng kích thước lên đáng kể */
+    text-align: center;
+    line-height: 1.4;
+    margin: 0;
+    padding: 20px;
+    width: 100%;
+    max-width: 95vw; /* Cho phép chữ dàn ra gần hết chiều ngang màn hình */
+  }
+
+  /* Đóng gói từ (Word) */
+  .word {
+    display: inline-block;
+    white-space: nowrap;   /* Giữ chữ trong từ dính liền */
+    margin: 0 10px;        /* Tăng khoảng cách giữa các từ cho thoáng */
+  }
+
+  span.char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(-250px);
+    animation: fall 1.3s ease-out forwards;
+  }
+
+  @keyframes fall {
+    0% { transform: translateY(-250px) scale(1.5); opacity: 0; filter: blur(5px); }
+    60% { transform: translateY(20px); opacity: 1; filter: blur(0); }
+    80% { transform: translateY(-10px); }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  /* Hiệu ứng Neon và Bóng đổ khối to hơn */
+  @keyframes glow {
+    0% {
+      color: #ff99ff;
+      text-shadow: 
+        0 0 15px #ff00de, 
+        0 0 30px #ff00de,
+        8px 8px 0px #55004a; /* Bóng khối đậm đà hơn */
+      transform: translate(0, 0);
+    }
+    50% {
+      color: #99ffff;
+      text-shadow: 
+        0 0 30px #00ffff, 
+        0 0 60px #00ffff,
+        12px 12px 2px #004a4a; /* Bóng đổ dài ra khi nhún */
+      transform: translate(-4px, -4px); /* Nhún mạnh hơn chút */
+    }
+    100% {
+      color: #ff99ff;
+      text-shadow: 
+        0 0 15px #ff00de, 
+        0 0 30px #ff00de,
+        8px 8px 0px #55004a;
+      transform: translate(0, 0);
+    }
+  }
+
+  h1.glow span.char {
+    animation: fall 1.3s ease-out forwards, glow 2s infinite alternate;
+  }
+  
+  h1:hover span.char {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+  }
+</style>
+</head>
+<body>
+  <h1 id="title"></h1>
+  <script>
+    // Nội dung văn bản
+    const rawText = `CẢM ƠN CÔ GIÁO VÀ CÁC BẠN
+ĐÃ LẮNG NGHE BÀI THUYẾT TRÌNH CỦA NHÓM EM
+---
+CÒN GÌ SAI SÓT MONG CÔ GIÁO VÀ CÁC BẠN
+GÓP Ý ĐỂ NHÓM EM SỬA VÀ HOÀN THIỆN HƠN
+Ở NHỮNG BÀI SAU`;
+
+    const title = document.getElementById("title");
+    let delayCounter = 0;
+
+    const lines = rawText.split('\n');
+
+    lines.forEach((lineContent) => {
+      // Tách dòng thành các từ
+      const words = lineContent.split(' '); 
+
+      words.forEach((wordStr) => {
+         const wordSpan = document.createElement("span");
+         wordSpan.className = "word"; 
+
+         // Tách từ thành các chữ cái
+         [...wordStr].forEach(char => {
+            const charSpan = document.createElement("span");
+            charSpan.textContent = char;
+            charSpan.className = "char";
+            charSpan.style.animationDelay = `${delayCounter * 0.05}s`;
+            wordSpan.appendChild(charSpan);
+            delayCounter++;
+         });
+
+         title.appendChild(wordSpan);
+      });
+
+      title.appendChild(document.createElement("br"));
+    });
+
+    const totalTime = delayCounter * 50 + 1300;
+    setTimeout(() => title.classList.add("glow"), totalTime);
+  </script>
+</body>
+</html>
