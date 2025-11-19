@@ -3,280 +3,307 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create by Vhh - Muối Của Rừng</title>
+    <title>Create_by_VHH</title>
     <style>
-        /* --- 1. CẤU HÌNH CHUNG & MÀU SẮC --- */
+        /* --- 1. CẤU HÌNH CHUNG --- */
         :root {
-            --primary-bg: radial-gradient(circle at center, #1e2545 0%, #050510 100%);
+            --primary-bg: #0f0c15;
             --gold-gradient: linear-gradient(to bottom, #fffacd, #f0ad4e 50%, #8a6d3b);
             --gold-color: #f0ad4e;
             --blue-box: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
-            --text-white: #ffffff;
-            --danger-color: #ff4444;
-            
-            /* Responsive Fonts (Tự động co giãn theo màn hình) */
             --font-huge: clamp(3rem, 6vw, 7rem);
-            --font-big: clamp(1.5rem, 3.5vw, 4rem); /* Giảm nhẹ font câu hỏi để vừa nội dung dài */
+            --font-big: clamp(1.5rem, 3.5vw, 4rem);
             --font-medium: clamp(1rem, 2vw, 2rem);
-            --font-normal: clamp(1rem, 1.5vw, 1.8rem);
         }
 
         body {
             font-family: 'Verdana', sans-serif;
             background: var(--primary-bg);
-            color: var(--text-white);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            user-select: none;
-            transition: background 0.2s;
-        }
-
-        /* Hiệu ứng kịch tính */
-        body.drama-mode { animation: backgroundFlash 0.5s infinite alternate; }
-        @keyframes backgroundFlash {
-            from { background: radial-gradient(circle at center, #1e2545 0%, #050510 100%); }
-            to { background: radial-gradient(circle at center, #2c0a0a 0%, #000 100%); }
+            color: #fff;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; margin: 0; overflow: hidden;
+            user-select: none; perspective: 1000px;
+            cursor: pointer;
         }
 
         .is-hidden { display: none !important; }
 
-        /* --- 2. NÚT BẤM --- */
-        .btn-action {
-            cursor: pointer; font-size: var(--font-normal); 
-            padding: 15px 40px; margin: 20px;
-            border-radius: 50px; 
-            border: 2px solid #fff;
-            background: var(--gold-gradient); 
-            color: #2c1b05;
-            font-weight: 900; text-transform: uppercase;
-            box-shadow: 0 0 20px rgba(240, 173, 78, 0.6);
-            transition: all 0.2s;
+        /* --- BACKGROUND 3D --- */
+        .bg-3d-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; transform-style: preserve-3d; overflow: hidden; }
+        .cube-floater {
+            position: absolute; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d; animation: floatCube linear infinite;
         }
-        .btn-action:hover { transform: scale(1.1); filter: brightness(1.2); }
-        .btn-secondary { background: #444; color: #fff; border-color: #999; box-shadow: none; }
+        .cube-floater::before, .cube-floater::after { content: ''; position: absolute; inset: 0; background: inherit; border: inherit; }
+        .cube-floater::before { transform: translateZ(-20px); }
+        .cube-floater::after { transform: rotateY(90deg) translateZ(-20px); }
+        @keyframes floatCube {
+            0% { transform: translateZ(-500px) rotate(0deg) translateY(100vh); opacity: 0; }
+            20%, 80% { opacity: 1; }
+            100% { transform: translateZ(200px) rotate(360deg) translateY(-20vh); opacity: 0; }
+        }
 
+        /* --- RUNG MÀN HÌNH (Explosion) --- */
+        .screen-explode-shake { animation: violentShake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes violentShake {
+            0% { transform: translate(0, 0); }
+            10% { transform: translate(-10px, -10px) rotate(-2deg); }
+            30% { transform: translate(10px, 10px) rotate(2deg); }
+            50% { transform: translate(-10px, 10px) rotate(-2deg); }
+            70% { transform: translate(10px, -10px) rotate(2deg); }
+            100% { transform: translate(0, 0); }
+        }
+        
+        /* Rung bảng tiền (Nặng hơn) */
+        .impact-shake { animation: heavyImpact 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes heavyImpact {
+            0% { transform: rotateY(-15deg) rotateX(5deg) translateY(0); }
+            10% { transform: rotateY(-15deg) rotateX(5deg) translateY(40px); } /* Thụt sâu hơn */
+            30% { transform: rotateY(-15deg) rotateX(5deg) translateY(-20px); } /* Nảy cao hơn */
+            50% { transform: rotateY(-15deg) rotateX(5deg) translateY(10px); }
+            100% { transform: rotateY(-15deg) rotateX(5deg) translateY(0); }
+        }
+
+        .flash-overlay { position: fixed; inset: 0; background: #fff; z-index: 4000; opacity: 0; pointer-events: none; mix-blend-mode: overlay; }
+        .flash-active { animation: flashBang 0.6s ease-out forwards; }
+        @keyframes flashBang { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+        /* --- UI BUTTONS --- */
+        .btn-action {
+            cursor: pointer; font-size: 1.2rem; padding: 15px 40px; margin: 20px;
+            border-radius: 50px; border: 2px solid #fff; background: var(--gold-gradient); color: #2c1b05;
+            font-weight: 900; text-transform: uppercase; box-shadow: 0 10px 20px rgba(0,0,0,0.5); transition: all 0.2s;
+            z-index: 100; position: relative;
+        }
+        .btn-action:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 0 20px #ffcc00; }
+        .btn-secondary { background: #444; color: #fff; border-color: #999; }
+        
         .btn-next-external {
-            position: fixed; bottom: 2vh; right: 2vw;
-            width: clamp(60px, 8vw, 90px); height: clamp(60px, 8vw, 90px);
-            background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000);
-            color: #fff; border: 3px solid #fff; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            text-decoration: none; font-weight: bold; font-size: var(--font-normal);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            z-index: 9999; animation: pulseBtn 2s infinite;
+            position: fixed; bottom: 2vh; right: 2vw; width: clamp(60px, 8vw, 90px); height: clamp(60px, 8vw, 90px);
+            background: radial-gradient(circle at 30% 30%, #ff4444, #990000); color: #fff; border: 3px solid #fff; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; text-decoration: none; font-weight: bold; z-index: 9999;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); animation: pulseBtn 2s infinite;
         }
         @keyframes pulseBtn { 0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); } }
 
-        /* --- 3. CONTAINER CHUYỂN CẢNH --- */
         .screen-container {
-            position: absolute; width: 100%; height: 100%;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            transition: all 0.6s ease;
+            position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; transition: all 0.6s ease; transform-style: preserve-3d; z-index: 10;
         }
-        .slide-out-left { transform: translateX(-150%); opacity: 0; pointer-events: none; }
-        .slide-in-right { transform: translateX(150%); opacity: 0; pointer-events: none; }
-        .slide-center { transform: translateX(0); opacity: 1; pointer-events: auto; }
+        .slide-out-left { transform: translateX(-150%) rotateY(-20deg); opacity: 0; pointer-events: none; }
+        .slide-in-right { transform: translateX(150%) rotateY(20deg); opacity: 0; pointer-events: none; }
+        .slide-center { transform: translateX(0) rotateY(0); opacity: 1; pointer-events: auto; }
 
-        /* --- 4. VÒNG QUAY (3D DIGITAL STYLE) --- */
+        /* --- WHEEL --- */
+        .wheel-wrapper-3d { perspective: 1000px; position: relative; z-index: 50; }
         .wheel-container {
-            width: 60vw; height: 40vh;
-            background: linear-gradient(90deg, #000 0%, #222 20%, #222 80%, #000 100%);
-            border: 6px solid #555; 
-            border-radius: 15px;
-            overflow: hidden; margin: 2vh auto; position: relative;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 0 60px #000;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            width: 65vw; height: 45vh; background: #000; border: 15px solid #333; border-radius: 10px;
+            overflow: hidden; position: relative; transform: rotateX(10deg); transform-style: preserve-3d;
+            box-shadow: 0 50px 50px rgba(0,0,0,0.8), inset 0 0 80px rgba(0,0,0,1); transition: border-color 0.3s, box-shadow 0.3s;
         }
-        
-        /* Hiệu ứng viền phát sáng khi quay */
-        .wheel-container.spinning {
-            border-color: #ffcc00;
-            box-shadow: 0 0 50px #ffcc00, inset 0 0 30px #ffcc00;
-            animation: borderFlash 0.2s infinite alternate;
+        .wheel-container.spinning { border-color: #ffcc00; box-shadow: 0 50px 80px rgba(255, 100, 0, 0.3), inset 0 0 40px #ff4400; animation: shake 0.04s infinite; }
+        @keyframes shake { 0% { transform: rotateX(10deg) translate(1px, 1px); } 50% { transform: rotateX(10deg) translate(-1px, -1px); } 100% { transform: rotateX(10deg) translate(1px, 1px); } }
+        .spark-spin {
+            position: absolute; width: 6px; height: 20px; background: #fff; border-radius: 2px; pointer-events: none; z-index: 200;
+            will-change: transform, opacity; box-shadow: 0 0 5px #ffff00, 0 0 15px #ff0000; mix-blend-mode: screen;
         }
-        @keyframes borderFlash {
-            from { border-color: #ffcc00; box-shadow: 0 0 30px #ffcc00; }
-            to { border-color: #fff; box-shadow: 0 0 60px #fff; }
-        }
-
-        .wheel-container::before, .wheel-container::after {
-            content: ""; position: absolute; left: 0; right: 0; height: 30%; z-index: 2; pointer-events: none;
-        }
-        .wheel-container::before { top: 0; background: linear-gradient(to bottom, #000, transparent); }
-        .wheel-container::after { bottom: 0; background: linear-gradient(to top, #000, transparent); }
-
         .wheel-pointer {
-            position: absolute; top: 50%; left: 0; width: 100%; height: 20%;
-            transform: translateY(-50%);
-            background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1));
-            border-top: 2px solid var(--gold-color);
-            border-bottom: 2px solid var(--gold-color);
-            box-shadow: 0 0 20px rgba(240, 173, 78, 0.3);
-            z-index: 3;
-            backdrop-filter: brightness(1.5);
+            position: absolute; top: 50%; left: -20px; right: -20px; height: 18%;
+            transform: translateY(-50%) translateZ(30px);
+            background: linear-gradient(to bottom, rgba(240, 173, 78, 0.15), rgba(240, 173, 78, 0) 50%, rgba(240, 173, 78, 0.15));
+            border-top: 3px solid var(--gold-color); border-bottom: 3px solid var(--gold-color); z-index: 6; backdrop-filter: blur(2px);
         }
-
-        #names-list { list-style: none; padding: 0; margin: 0; }
+        #names-list { list-style: none; padding: 0; margin: 0; transform-style: preserve-3d; }
         #names-list li { 
-            height: 8vh; 
-            display: flex; align-items: center; justify-content: center;
+            height: 8vh; display: flex; align-items: center; justify-content: center;
             font-size: var(--font-big); font-weight: 900; text-transform: uppercase;
-            color: #777; transition: color 0.3s;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            color: #888; text-shadow: 0 2px 2px rgba(0,0,0,0.8); transform: scale(0.9); opacity: 0.6;
         }
 
-        /* --- 5. CÂU HỎI & ĐÁP ÁN (HEXAGON STYLE) --- */
-        #quiz-screen { width: 95vw; height: 100vh; padding: 2vh 0; box-sizing: border-box; display: flex; flex-direction: column; }
-        
-        .top-bar { width: 100%; display: flex; justify-content: flex-end; margin-bottom: 1vh; padding-right: 2vw; box-sizing: border-box;}
-
-        .question-box {
-            background: var(--blue-box);
-            border: 2px solid var(--gold-color);
-            padding: 0 4vw; margin: 0 auto 3vh auto;
-            text-align: center; display: flex; align-items: center; justify-content: center;
-            width: 90vw; flex: 1.2; position: relative;
-            clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
-        }
-        
-        .question-box::before {
-            content: ""; position: absolute; inset: 0; z-index: -1;
-            background: var(--gold-color);
-            clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
-            transform: scale(1.01);
-        }
-
-        #question-text { font-size: var(--font-big); font-weight: bold; line-height: 1.3; text-shadow: 2px 2px 0 #000; color: #fff; }
-
-        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2vh 4vw; height: 40vh; width: 90vw; margin: 0 auto; }
-
-        .answer-btn {
-            background: var(--blue-box); color: white; 
-            font-size: var(--font-medium); text-align: left; padding: 0 3vw 0 1vw;
-            cursor: pointer; transition: all 0.2s; position: relative; 
-            display: flex; align-items: center;
-            clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
-            border: none;
-        }
-
-        .answer-btn::after {
-            content: ""; position: absolute; inset: 0; z-index: -1;
-            background: #666;
-            clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
-            transform: scale(1.02); transition: background 0.3s;
-        }
-
-        .answer-btn:hover::after { background: var(--gold-color); }
-        .answer-btn:hover span { color: #fff; }
-        .answer-btn span { color: var(--gold-color); font-weight: bold; margin-right: 15px; margin-left: 2vw; font-size: 1.2em; flex-shrink: 0;}
-        .answer-btn.correct { background: #006400 !important; } .answer-btn.correct::after { background: #00ff00 !important; animation: glowGreen 1s infinite alternate; }
-        .answer-btn.incorrect { background: #550000 !important; } .answer-btn.incorrect::after { background: red !important; }
-        .answer-btn.removed { opacity: 0; pointer-events: none; }
-        @keyframes glowGreen { from { box-shadow: 0 0 10px #00ff00; } to { box-shadow: 0 0 30px #00ff00; } }
-
-        /* --- 6. THANG TIỀN (PRO CENTERED) --- */
-        #money-screen { z-index: 100; }
-
+        /* --- MONEY LADDER --- */
+        #money-screen { perspective: 1500px; } 
         .money-card {
-            background: rgba(0, 0, 0, 0.95); 
-            border: 3px solid var(--gold-color); 
-            border-radius: 20px; 
-            height: 95vh; width: clamp(350px, 50vw, 600px); 
-            padding: 20px 0; 
-            box-shadow: 0 0 50px rgba(240, 173, 78, 0.3); 
-            display: flex; flex-direction: column; justify-content: center;
+            background: rgba(10, 10, 20, 0.95); border: 2px solid #444; border-radius: 20px;
+            height: 80vh; width: clamp(400px, 50vw, 600px); padding: 10px 0;
+            transform: rotateY(-15deg) rotateX(5deg); transform-style: preserve-3d;
+            box-shadow: -50px 50px 100px rgba(0,0,0,0.8);
+            overflow: hidden; position: relative; display: flex; flex-direction: column; justify-content: flex-end;
         }
-
-        .money-list { 
-            list-style: none; padding: 0 20px; margin: 0; 
-            display: flex; flex-direction: column-reverse; 
-            height: 100%; justify-content: space-between; 
+        .money-scroll-wrapper {
+            width: 100%; max-height: 100%; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;
+            display: flex; flex-direction: column-reverse; padding-top: 100px; padding-bottom: 20px;
         }
-
+        .money-scroll-wrapper::-webkit-scrollbar { display: none; }
+        .money-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column-reverse; width: 100%; transform-style: preserve-3d; }
         .money-list li {
-            display: flex; justify-content: center; align-items: center;
-            font-size: clamp(1rem, 2.5vh, 2rem); 
-            color: #888; border-radius: 50px; padding: 5px 0;
-            transition: all 0.3s ease; position: relative;
+            width: 85%; margin: 5px auto; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
+            font-size: clamp(1rem, 2vh, 1.5rem); color: #666; background: rgba(255,255,255,0.05);
+            border: 1px solid #333; border-radius: 8px; transform: translateZ(0px); box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+            transition: all 0.3s; flex-shrink: 0; position: relative;
         }
-
-        .money-idx { display: inline-block; width: 40px; text-align: right; margin-right: 15px; font-weight: normal; }
-        .money-val { display: inline-block; width: 220px; text-align: left; font-weight: bold; }
-
-        .money-list li.safe { color: #fff; }
+        .money-list li.safe { color: #eee; border-color: #888; }
         .money-list li.safe .money-idx { color: var(--gold-color); }
-
         .money-list li.active {
-            background: linear-gradient(90deg, #d98d26, #f0ad4e, #d98d26);
-            color: #000 !important; font-weight: 900;
-            transform: scale(1.1); box-shadow: 0 0 25px rgba(240, 173, 78, 0.8);
-            z-index: 2; border: 2px solid #fff;
+            background: linear-gradient(90deg, #b87418, #f0ad4e, #b87418); color: #000 !important; font-weight: 900;
+            border: 3px solid #fff; transform: translateZ(50px) scale(1.15);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.8), 0 0 10px #ffcc00; z-index: 100;
+            animation: flashBorder 0.5s; 
         }
-        .money-list li.active .money-idx, .money-list li.active .money-val { color: #000; }
+        @keyframes flashBorder { 0% { border-color: #fff; } 50% { border-color: #ffff00; } 100% { border-color: #fff; } }
 
-        /* --- 7. BẢNG XẾP HẠNG & WINNER --- */
-        #winner-overlay, #ranking-overlay, #result-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        .jump-slam-anim { animation: jumpUpDrop 0.6s cubic-bezier(0.7, -0.4, 0.4, 1.4) forwards; z-index: 200; }
+        @keyframes jumpUpDrop {
+            0% { transform: translateZ(0) scale(0.95); }
+            50% { transform: translateZ(100px) translateY(-40px) scale(1.1); } 
+            80% { transform: translateZ(80px) translateY(0) scale(1.2); } 
+            100% { transform: translateZ(80px) translateY(0) scale(1.2); } 
+        }
+        
+        /* SÓNG XUNG KÍCH */
+        .ladder-shockwave {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 100%; height: 100%; border-radius: 15px;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 1), inset 0 0 20px rgba(255,255,255,0.8); 
+            border: 8px solid #fff; opacity: 0; z-index: 150; pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+        .ladder-shockwave-active { animation: ladderWave 0.5s ease-out forwards; }
+        @keyframes ladderWave {
+            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 1; border-width: 10px; }
+            100% { transform: translate(-50%, -50%) scale(1.6, 3); opacity: 0; border-width: 0px; }
+        }
+        
+        /* HẠT TÓE LỬA */
+        .ladder-spark {
+            position: absolute; width: 6px; height: 30px; background: #fff;
+            box-shadow: 0 0 10px #ffcc00, 0 0 20px #ff4400; 
+            border-radius: 4px; z-index: 300; pointer-events: none;
+        }
+        .steam-puff {
+            position: absolute; width: 80px; height: 80px; background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(200,200,200,0) 70%);
+            border-radius: 50%; pointer-events: none; z-index: 200; opacity: 0;
+        }
+
+        /* --- WINNER --- */
+        #winner-overlay {
+            position: fixed; inset: 0; background: radial-gradient(circle, rgba(20, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.95) 100%);
+            z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(2px); 
         }
         #winner-name-big { 
-            font-size: var(--font-huge); 
-            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            font-weight: 900; text-transform: uppercase; filter: drop-shadow(0 0 20px rgba(240,173,78,0.5));
+            font-size: clamp(4rem, 9vw, 10rem); font-weight: 900; text-transform: uppercase;
+            color: transparent; -webkit-text-stroke: 2px #ffcc00; position: relative; z-index: 3500; opacity: 0;
+        }
+        .fire-mode {
+            background: linear-gradient(0deg, #ff0000 0%, #ff8800 50%, #ffff00 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; -webkit-text-stroke: 0px transparent !important;
+            text-shadow: 0 0 10px #ff0000, 0 -5px 20px #ff8800, 0 -10px 40px #ffcc00;
+            animation: firePulse 0.1s infinite alternate; filter: drop-shadow(0 0 10px #ff0000);
+        }
+        @keyframes firePulse { 0% { transform: scale(1); } 100% { transform: scale(1.02); } }
+        .winner-dead-drop { animation: superHeavyDrop 0.4s cubic-bezier(0.6, 0, 1, 1) forwards; }
+        @keyframes superHeavyDrop { 0% { transform: translateY(-150vh) scale(3); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+        
+        /* Mảnh kính */
+        .glass-shard {
+            position: absolute; top: 50%; left: 50%; transform-origin: center;
+            background: linear-gradient(135deg, rgba(255, 200, 0, 0.9), rgba(255, 100, 0, 0.6));
+            border: 1px solid #fff; box-shadow: 0 0 15px #ff4500; z-index: 3200; opacity: 0; pointer-events: none; mix-blend-mode: screen;
+        }
+        /* Tàn lửa */
+        .ember-particle {
+            position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%;
+            box-shadow: 0 0 5px #ffcc00, 0 0 10px #ff0000; pointer-events: none; z-index: 3600;
+        }
+        @keyframes riseEmber { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-200px) translateX(var(--drift)) scale(0); opacity: 0; } }
+        .tap-to-continue {
+            color: #ffcc00; font-size: 1.2rem; margin-top: 60px; opacity: 0;
+            animation: blinkText 2s infinite; pointer-events: none; text-shadow: 0 0 10px #ff0000;
+        }
+        .tap-visible { opacity: 1; transition: opacity 1s 1s; }
+        @keyframes blinkText { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        /* --- RESULT SCREEN (FIX TEXT SIZE) --- */
+        #result-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 3000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .result-box {
+            background: var(--blue-box); border: 4px solid var(--gold-color); padding: 5vh 2vw;
+            border-radius: 30px; text-align: center; width: 90vw; max-width: 1200px;
+            transform: rotateX(5deg); box-shadow: 0 30px 80px rgba(0,0,0,1);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .result-title {
+            font-size: clamp(3rem, 6vw, 5rem); font-weight: 900; margin-bottom: 10px; 
+            color: #ff3333; text-transform: uppercase; text-shadow: 0 0 20px #ff0000;
+            -webkit-text-stroke: 1px #fff;
+        }
+        .result-name {
+            font-size: clamp(2.5rem, 5vw, 4rem); color: #fff; font-weight: 900; 
+            margin: 20px 0; text-transform: uppercase; text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+        }
+        #res-score { font-size: clamp(1.5rem, 3vw, 2.5rem); color: #ccc; margin-bottom: 20px; font-weight: bold; }
+        .result-money { 
+            font-size: clamp(5rem, 15vw, 12rem); font-weight: 900; margin: 30px 0;
+            background: linear-gradient(to bottom, #fff, #ffcc00, #b8860b);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(255, 204, 0, 0.5)); animation: pulseMoney 2s infinite ease-in-out;
+        }
+        @keyframes pulseMoney {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(255, 204, 0, 0.5)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 40px rgba(255, 204, 0, 0.8)); }
         }
 
+        #ranking-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .ranking-table { width: 90vw; border-collapse: collapse; margin: 2vh 0; font-size: var(--font-medium); border: 1px solid var(--gold-color); }
         .ranking-table th { background: var(--gold-color); color: #000; padding: 15px; }
         .ranking-table td { border: 1px solid #555; padding: 10px; text-align: center; color: #fff; }
-
-        /* --- 8. KẾT QUẢ (BIG TEXT FIX) --- */
-        .result-box {
-            background: var(--blue-box); border: 4px solid var(--gold-color);
-            padding: 5vh; border-radius: 30px; text-align: center; width: 80vw;
+        
+        #quiz-screen { width: 95vw; height: 100vh; display: flex; flex-direction: column; padding: 2vh 0; z-index: 20; position: relative; }
+        .question-box {
+            background: var(--blue-box); border: 2px solid var(--gold-color); padding: 0 4vw; margin: 0 auto 3vh auto; width: 90vw; flex: 1.2;
+            display: flex; justify-content: center; align-items: center; text-align: center; clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
         }
-        .result-title { 
-            font-size: clamp(3rem, 6vw, 6rem); font-weight: 900; text-transform: uppercase; margin-bottom: 10px;
-            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        #question-text { font-size: var(--font-big); font-weight: bold; text-shadow: 2px 2px 0 #000; color: #fff; }
+        .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2vh 4vw; height: 40vh; width: 90vw; margin: 0 auto; }
+        .answer-btn {
+            background: var(--blue-box); color: white; border: none; font-size: var(--font-medium); padding: 0 3vw 0 1vw; cursor: pointer;
+            display: flex; align-items: center; clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%); transition: opacity 0.5s, visibility 0.5s;
         }
-        .result-name { 
-            font-size: clamp(2.5rem, 5vw, 5rem); color: #fff; font-weight: 900; 
-            margin: 10px 0; text-transform: uppercase; text-shadow: 0 2px 5px rgba(0,0,0,0.8);
-        }
-        #res-score { font-size: clamp(1.8rem, 3vw, 3.5rem); color: #ddd; margin-bottom: 20px; font-weight: bold; }
-        .result-money { 
-            font-size: clamp(3.5rem, 7vw, 8rem); color: var(--gold-color); font-weight: 900; 
-            margin: 30px 0; text-shadow: 0 0 30px rgba(240, 173, 78, 0.6);
-        }
+        .answer-btn.correct { background: #006400 !important; }
+        .answer-btn.incorrect { background: #550000 !important; }
+        .answer-btn.removed { opacity: 0; visibility: hidden; pointer-events: none; }
 
     </style>
 </head>
 <body>
-
+    <div id="bg-3d" class="bg-3d-container"></div>
+    <div id="flash-screen" class="flash-overlay"></div>
     <a href="ket_thuc.html" class="btn-next-external" target="_blank" title="Chuyển web">NEXT &#10148;</a>
-
+    
     <audio id="sound-bg" loop><source src="https://www.soundjay.com/misc/sounds/wind-chime-1.mp3" type="audio/mpeg"></audio>
     <audio id="sound-correct"><source src="https://www.soundjay.com/human/sounds/applause-01.mp3" type="audio/mpeg"></audio>
+    <audio id="sound-boom"><source src="https://www.soundjay.com/mechanical/sounds/glass-break-1.mp3" type="audio/mpeg"></audio>
     <audio id="sound-wrong"><source src="https://www.soundjay.com/misc/sounds/fail-buzzer-01.mp3" type="audio/mpeg"></audio>
+    <audio id="sound-slam"><source src="https://www.soundjay.com/human/sounds/footstep-concrete-jump-1.mp3" type="audio/mpeg"></audio>
+    <audio id="sound-whoosh"><source src="https://www.soundjay.com/nature/sounds/whip-whoosh-01.mp3" type="audio/mpeg"></audio>
 
     <div id="spinner-screen" class="screen-container slide-center">
-        <h1 style="color: var(--gold-color); font-size: var(--font-huge); text-shadow: 0 5px 10px #000; text-align: center; margin-bottom: 0;">AI LÀ TRIỆU PHÚ</h1>
-        
-        <div class="wheel-container">
-            <div class="wheel-pointer"></div>
-            <ul id="names-list"></ul>
+        <h1 style="color: var(--gold-color); font-size: var(--font-huge); text-shadow: 0 5px 10px #000; margin: 0; transform: translateZ(50px);">AI LÀ TRIỆU PHÚ</h1>
+        <div class="wheel-wrapper-3d" id="wheel-wrapper">
+            <div class="wheel-container"><div class="wheel-pointer"></div><ul id="names-list"></ul></div>
         </div>
-        
         <button class="btn-action" id="spin-btn" onclick="spinWheel()">QUAY NGAY</button>
     </div>
 
     <div id="winner-overlay" class="is-hidden">
-        <h2 style="color: #fff; font-size: var(--font-medium);">NGƯỜI CHƠI CHÍNH THỨC</h2>
-        <div id="winner-name-big">TÊN</div>
+        <h2 style="color: #aaa; font-size: var(--font-medium); margin-bottom: 50px; opacity: 0.8;">NGƯỜI ĐƯỢC CHỌN</h2>
+        <div id="winner-name-container">
+            <div id="winner-name-big">TÊN</div>
+            <div id="shockwave" class="winner-shockwave"></div>
+            <div id="cracks-container" style="position: absolute; top: 50%; left: 50%; width: 0; height: 0;"></div>
+        </div>
+        <div id="tap-guide" class="tap-to-continue">CHẠM VÀO MÀN HÌNH ĐỂ TIẾP TỤC</div>
     </div>
 
     <div id="ranking-overlay" class="is-hidden">
@@ -287,25 +314,25 @@
         </table>
         <div>
             <button class="btn-action" onclick="startFromRanking()">VÀO GAME</button>
-            <button class="btn-action btn-secondary" onclick="resetRanking()">RESET</button>
+            <button class="btn-action btn-secondary" onclick="resetRanking()">RESET BẢNG</button>
+            <button class="btn-action btn-secondary" onclick="clearPlayHistory()">RESET TỶ LỆ</button>
         </div>
     </div>
 
     <div id="money-screen" class="screen-container is-hidden">
-        <div class="money-card"><ul class="money-list" id="money-list"></ul></div>
+        <div class="money-card" id="money-card-container">
+            <div class="money-scroll-wrapper">
+                <ul class="money-list" id="money-list"></ul>
+            </div>
+        </div>
     </div>
 
     <div id="quiz-screen" class="screen-container is-hidden">
-        <div class="top-bar">
-            <button id="btn-5050" class="btn-action" style="border-radius: 50%; width: clamp(70px, 9vw, 100px); height: clamp(70px, 9vw, 100px); padding: 0; display:flex; align-items:center; justify-content:center;" onclick="use5050()">50:50</button>
+        <div style="width:100%; display:flex; justify-content:flex-end; padding-right:2vw;">
+            <button id="btn-5050" class="btn-action" style="border-radius:50%; width:80px; height:80px; padding:0; display:flex; align-items:center; justify-content:center;" onclick="use5050()">50:50</button>
         </div>
-        
-        <div class="question-box">
-            <div id="question-text">Nội dung câu hỏi hiển thị ở đây?</div>
-        </div>
-        
-        <div class="answers-grid" id="answers-container">
-            </div>
+        <div class="question-box"><div id="question-text">...</div></div>
+        <div class="answers-grid" id="answers-container"></div>
     </div>
 
     <div id="result-overlay" class="is-hidden">
@@ -319,20 +346,9 @@
     </div>
 
     <script>
-        // --- 1. DANH SÁCH TÊN HỌC SINH (MỚI) ---
-        const names = [
-            "Thuý Anh", "Kỳ Anh", "Việt Anh", "Phương Anh", "Bắc", "Cúc",
-            "Dung", "Đăng", "Hà", "Hiệp", "Hồng", "Nguyễn Huy", "Dương Hương",
-            "Kiều", "Lan", "Hoàng Ly", "Nguyễn Ly", "Trà Mai", "Xuân Mai",
-            "Minh", "Nam", "Niên", "Nguyễn Phương", "Vũ Phương", "Thanh",
-            "Thành", "Thu", "Thùy", "Thúy", "Trưởng", "Tuyên", "Tuyết"
-        ];
-
-        // --- 2. DỮ LIỆU TIỀN THƯỞNG ---
-        const moneyLevels = ["200.000", "400.000", "600.000", "1.000.000", "2.000.000", "3.000.000", "6.000.000", "10.000.000", "14.000.000", "22.000.000", "30.000.000", "40.000.000", "60.000.000", "85.000.000", "150.000.000"];
-        const safeLevels = [4, 9, 14]; 
-
-        // --- 3. NGÂN HÀNG 30 CÂU HỎI "MUỐI CỦA RỪNG" ---
+        const names = ["Thuý Anh", "Kỳ Anh", "Việt Anh", "Phương Anh", "Bắc", "Cúc", "Dung", "Đăng", "Hà", "Hiệp", "Hồng", "Nguyễn Huy", "Dương Hương", "Kiều", "Lan", "Hoàng Ly", "Nguyễn Ly", "Trà Mai", "Xuân Mai", "Minh", "Nam", "Niên", "Nguyễn Phương", "Vũ Phương", "Thanh", "Thành", "Thu", "Thùy", "Thúy", "Trưởng", "Tuyên", "Tuyết"];
+        const baseMoneyLevels = ["200.000", "400.000", "600.000", "1.000.000", "2.000.000", "3.000.000", "6.000.000", "10.000.000", "14.000.000", "22.000.000", "30.000.000", "40.000.000", "60.000.000", "85.000.000", "150.000.000"];
+        let moneyLevels = [], safeLevels = []; 
         const questionsData = [
             { q: "Tác phẩm “Muối của rừng” được viết bởi tác giả nào?", o: ["Tô Hoài", "Nguyễn Minh Châu", "Nguyễn Huy Thiệp", "Ma Văn Kháng"], c: 2 },
             { q: "Nghề nghiệp của ông Diểu là gì?", o: ["Chăn thả gia súc", "Làm nương rẫy", "Đi săn", "Làm gỗ"], c: 2 },
@@ -366,9 +382,25 @@
             { q: "Tên truyện “Muối của rừng” giúp hiểu rằng:", o: ["Thiên nhiên có vị mặn thật", "Rừng là nơi nguy hiểm", "Rừng dạy giá trị tinh thần bền vững", "Đi rừng phải mang theo muối"], c: 2 }
         ];
 
-        let currentPlayer = "", currentQIndex = -1, currentQuestions = [], isLocked = false;
+        let currentPlayer = "", currentQIndex = -1, currentQuestions = [], isLocked = false, sparkInterval, emberInterval;
+        let isWinnerWaitState = false; 
 
-        // --- 4. THUẬT TOÁN SHUFFLE (Trộn mảng) ---
+        function getPlayedHistory() { return JSON.parse(localStorage.getItem('altp_played_history') || '{}'); }
+        function savePlayedHistory(h) { localStorage.setItem('altp_played_history', JSON.stringify(h)); }
+        function clearPlayHistory() { localStorage.removeItem('altp_played_history'); alert("Đã reset tỷ lệ!"); }
+        function pickWinnerWithWeight() {
+            const history = getPlayedHistory();
+            let weightedPool = [];
+            names.forEach(name => {
+                let count = history[name] || 0;
+                let tickets = (count === 0) ? 50 : 1;
+                for(let i = 0; i < tickets; i++) weightedPool.push(name);
+            });
+            const winner = weightedPool[Math.floor(Math.random() * weightedPool.length)];
+            history[winner] = (history[winner] || 0) + 1;
+            savePlayedHistory(history);
+            return winner;
+        }
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -377,25 +409,39 @@
             return array;
         }
 
-        function init() {
-            const ul = document.getElementById('names-list');
-            ul.innerHTML = ''; 
-            // Nhân bản tên để tạo vòng lặp
-            for(let i=0; i<3; i++) names.forEach(n => {
-                let li = document.createElement('li');
-                li.textContent = n;
-                li.style.height = '8vh';
-                ul.appendChild(li);
-            });
+        function generateMoneyLevels() {
+            const totalQ = questionsData.length;
+            moneyLevels = [];
+            for(let i = 0; i < totalQ; i++) {
+                if (i < baseMoneyLevels.length) {
+                    moneyLevels.push(baseMoneyLevels[i]);
+                } else {
+                    let lastVal = parseInt(baseMoneyLevels[baseMoneyLevels.length - 1].replace(/\./g, ''));
+                    let newVal = lastVal + ((i - baseMoneyLevels.length + 1) * 50000000);
+                    moneyLevels.push(newVal.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
+                }
+            }
+            safeLevels = []; for(let i = 4; i < totalQ; i+=5) safeLevels.push(i);
+        }
 
-            const ml = document.getElementById('money-list');
-            ml.innerHTML = '';
+        function initBackground3D() {
+            const container = document.getElementById('bg-3d');
+            for(let i=0; i<15; i++) {
+                const cube = document.createElement('div'); cube.className = 'cube-floater';
+                const size = Math.random() * 50 + 20; cube.style.width = size + 'px'; cube.style.height = size + 'px';
+                cube.style.left = Math.random() * 100 + 'vw'; cube.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                cube.style.animationDelay = (Math.random() * -20) + 's'; container.appendChild(cube);
+            }
+        }
+
+        function init() {
+            initBackground3D(); generateMoneyLevels();
+            const ul = document.getElementById('names-list'); ul.innerHTML = ''; 
+            for(let i=0; i<5; i++) names.forEach(n => { let li = document.createElement('li'); li.textContent = n; ul.appendChild(li); });
+            const ml = document.getElementById('money-list'); ml.innerHTML = '';
             moneyLevels.forEach((m, i) => {
-                let li = document.createElement('li');
-                li.innerHTML = `<span class="money-idx">${i+1}</span> <span class="money-val">${m}</span>`;
-                li.dataset.idx = i;
-                if(safeLevels.includes(i)) li.classList.add('safe');
-                ml.appendChild(li);
+                let li = document.createElement('li'); li.innerHTML = `<span class="money-idx">${i+1}</span> <span class="money-val">${m}</span>`;
+                li.dataset.idx = i; if(safeLevels.includes(i)) li.classList.add('safe'); ml.appendChild(li);
             });
             if(!localStorage.getItem('altp_ranking')) localStorage.setItem('altp_ranking', '[]');
         }
@@ -404,177 +450,243 @@
         function spinWheel() {
             document.getElementById('spin-btn').disabled = true;
             try { document.getElementById('sound-bg').play(); } catch(e){}
-            const winnerIdx = Math.floor(Math.random() * names.length);
-            currentPlayer = names[winnerIdx];
-            
-            // Hiệu ứng kịch tính
-            document.body.classList.add('drama-mode');
-            document.querySelector('.wheel-container').classList.add('spinning');
-
-            const wheelContainer = document.querySelector('.wheel-container');
+            currentPlayer = pickWinnerWithWeight();
+            const nameIndexInArray = names.indexOf(currentPlayer);
+            const stopSetIndex = 3; const finalIndex = (stopSetIndex * names.length) + nameIndexInArray;
+            const wheelContainer = document.querySelector('.wheel-container'); wheelContainer.classList.add('spinning');
+            sparkInterval = setInterval(createSpinSparks, 40); 
             const itemHeight = wheelContainer.clientHeight / 5; 
-            const stopIndex = (3 * names.length) + winnerIdx;
-            const stopPos = (stopIndex * itemHeight) - (wheelContainer.clientHeight / 2) + (itemHeight / 2);
-            
+            const stopPos = (finalIndex * itemHeight) - (wheelContainer.clientHeight / 2) + (itemHeight / 2);
             const ul = document.getElementById('names-list');
-            // Quay chậm 8 giây
-            ul.style.transition = 'transform 6s cubic-bezier(0.1, 0, 0, 1)';
-            ul.style.transform = `translateY(-${stopPos}px)`;
-
+            ul.style.transition = 'transform 6s cubic-bezier(0.25, 0.1, 0.25, 1)'; ul.style.transform = `translateY(-${stopPos}px)`;
             setTimeout(() => {
-                document.getElementById('sound-bg').pause();
+                clearInterval(sparkInterval); document.getElementById('sound-bg').pause();
+                wheelContainer.classList.remove('spinning'); celebrateWinner(currentPlayer);
+            }, 6100); 
+        }
+
+        function createSpinSparks() {
+            const wrapper = document.getElementById('wheel-wrapper'); const rect = wrapper.getBoundingClientRect();
+            for(let i=0; i < 4; i++) {
+                const spark = document.createElement('div'); spark.className = 'spark-spin';
+                const isLeft = Math.random() > 0.5; const startX = isLeft ? rect.width * 0.15 : rect.width * 0.85; const startY = rect.height/2 + (Math.random() * 30 - 15);
+                spark.style.left = startX + 'px'; spark.style.top = startY + 'px';
+                const angle = (isLeft ? 0 : Math.PI) + (Math.random() * Math.PI/3 - Math.PI/6);
+                spark.style.transform = `rotate(${angle}rad)`; wrapper.appendChild(spark);
+                spark.animate([{ transform: `translate(0,0) rotate(${angle}rad) scale(1)`, opacity: 1 }, { transform: `translate(${Math.cos(angle)*300}px, ${Math.sin(angle)*300}px) rotate(${angle}rad) scale(0)`, opacity: 0 }], { duration: 400 }).onfinish = () => spark.remove();
+            }
+        }
+        function createSteamEffect(element) {
+            const rect = element.getBoundingClientRect(); const container = document.getElementById('money-screen');
+            for(let i=0; i<10; i++) {
+                const puff = document.createElement('div'); puff.className = 'steam-puff';
+                puff.style.left = (rect.left + rect.width/2) + 'px'; puff.style.top = (rect.top + rect.height/2) + 'px';
+                container.appendChild(puff);
+                puff.animate([{ transform: 'translate(-50%,-50%) scale(0)', opacity: 0.8 }, { transform: `translate(${Math.random()*100-50}px, ${Math.random()*100-50}px) scale(2)`, opacity: 0 }], { duration: 800 }).onfinish = () => puff.remove();
+            }
+        }
+        function createLadderSparks(rect) {
+            const container = document.getElementById('money-screen');
+            for(let i=0; i<30; i++) {
+                const spark = document.createElement('div'); spark.className = 'ladder-spark';
+                const offsetX = Math.random() * rect.width;
+                spark.style.left = (rect.left + offsetX) + 'px'; spark.style.top = rect.bottom + 'px';
+                container.appendChild(spark);
+                const angle = (Math.PI / 2) + (Math.random() * 1 - 0.5); 
+                const velocity = Math.random() * 150 + 50;
+                spark.animate([{ transform: 'translate(0,0) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(angle)*velocity}px, ${Math.sin(angle)*velocity}px) scale(0)`, opacity: 0 }], { duration: 500 }).onfinish = () => spark.remove();
+            }
+        }
+        function createGlassShards() {
+            const container = document.getElementById('cracks-container'); container.innerHTML = ''; 
+            for(let i=0; i<30; i++) {
+                const shard = document.createElement('div'); shard.className = 'glass-shard';
+                container.appendChild(shard);
+                const size = Math.random()*80+40; shard.style.width=size+'px'; shard.style.height=size+'px';
+                const p1=`${Math.random()*50}% ${Math.random()*50}%`, p2=`${50+Math.random()*50}% ${Math.random()*50}%`, p3=`${50+Math.random()*50}% ${50+Math.random()*50}%`, p4=`${Math.random()*50}% ${50+Math.random()*50}%`;
+                shard.style.clipPath=`polygon(${p1},${p2},${p3},${p4})`;
+                const angle=Math.random()*6.28, vel=Math.random()*450+150;
+                shard.animate([{transform:`translate(-50%,-50%) scale(0.2)`, opacity:0}, {transform:`translate(calc(-50% + ${Math.cos(angle)*vel}px), calc(-50% + ${Math.sin(angle)*vel}px)) scale(1) rotate(${Math.random()*360}deg)`, opacity:1}], {duration:700, fill:'forwards'});
+            }
+        }
+        function spawnEmbers() {
+            if(!isWinnerWaitState) return;
+            const c = document.getElementById('winner-name-container');
+            const ember = document.createElement('div'); ember.className = 'ember-particle';
+            ember.style.left = `calc(50% + ${Math.random()*300 - 150}px)`; ember.style.top = `calc(50% + ${Math.random()*50}px)`;
+            ember.style.setProperty('--drift', (Math.random()*100-50)+'px');
+            document.getElementById('winner-overlay').appendChild(ember);
+            ember.animate([{transform:'translateY(0) scale(1)', opacity:1}, {transform:'translateY(-200px) translateX(var(--drift)) scale(0)', opacity:0}], {duration:1500}).onfinish=()=>ember.remove();
+        }
+
+        function celebrateWinner(name) {
+            const overlay = document.getElementById('winner-overlay'); const nameEl = document.getElementById('winner-name-big');
+            const shockwave = document.getElementById('shockwave'); const flash = document.getElementById('flash-screen');
+            const tapGuide = document.getElementById('tap-guide'); const cracks = document.getElementById('cracks-container');
+            
+            nameEl.textContent = name; nameEl.classList.remove('winner-dead-drop', 'fire-mode'); 
+            shockwave.classList.remove('winner-shockwave-active'); flash.classList.remove('flash-active');
+            tapGuide.classList.remove('tap-visible'); cracks.innerHTML = ''; 
+            if(emberInterval) clearInterval(emberInterval);
+            isWinnerWaitState = false; overlay.classList.remove('is-hidden');
+            
+            // Bắt đầu rơi: Chạy tiếng WHOOSH
+            try { const whoosh = document.getElementById('sound-whoosh'); whoosh.volume = 0.8; whoosh.currentTime = 0; whoosh.play(); } catch(e){}
+            
+            void nameEl.offsetWidth; nameEl.classList.add('winner-dead-drop');
+            
+            setTimeout(() => {
+                flash.classList.add('flash-active'); document.body.classList.add('screen-explode-shake');
+                setTimeout(() => document.body.classList.remove('screen-explode-shake'), 500);
+                shockwave.classList.add('winner-shockwave-active'); createGlassShards(); nameEl.classList.add('fire-mode');
+                
+                // KÍCH HOẠT CẢ 3 TIẾNG: BÙM + KÍNH VỠ + VỖ TAY
+                try { 
+                    const boom = document.getElementById('sound-boom'); boom.volume = 1.0; boom.currentTime = 0; boom.play(); 
+                    const slam = document.getElementById('sound-slam'); slam.volume = 1.0; slam.currentTime = 0; slam.play(); 
+                } catch(e){} 
                 try { document.getElementById('sound-correct').play(); } catch(e){}
                 
-                document.body.classList.remove('drama-mode');
-                document.querySelector('.wheel-container').classList.remove('spinning');
-
-                document.getElementById('winner-overlay').classList.remove('is-hidden');
-                document.getElementById('winner-name-big').textContent = currentPlayer;
-                setTimeout(() => {
-                    document.getElementById('winner-overlay').classList.add('is-hidden');
-                    showRanking(true);
-                }, 2500);
-            }, 6100); // 8.1 giây
+                isWinnerWaitState = true; tapGuide.classList.add('tap-visible'); emberInterval = setInterval(spawnEmbers, 100);
+            }, 350); 
         }
+
+        document.addEventListener('click', function(e) {
+            if(isWinnerWaitState) {
+                isWinnerWaitState = false; if(emberInterval) clearInterval(emberInterval);
+                document.getElementById('winner-overlay').classList.add('is-hidden'); showRanking(true);
+            }
+        });
 
         function showRanking(show) {
             const overlay = document.getElementById('ranking-overlay');
             if(show) {
-                const tbody = document.getElementById('ranking-body');
-                tbody.innerHTML = '';
+                const tbody = document.getElementById('ranking-body'); tbody.innerHTML = '';
                 let data = JSON.parse(localStorage.getItem('altp_ranking') || '[]');
                 if(data.length === 0) tbody.innerHTML = '<tr><td colspan="4">Chưa có dữ liệu</td></tr>';
-                else {
-                    data.forEach((item, idx) => tbody.innerHTML += `<tr><td>${idx + 1}</td><td>${item.name}</td><td>${item.score}</td><td>${item.money}</td></tr>`);
-                }
+                else { data.forEach((item, idx) => tbody.innerHTML += `<tr><td>${idx + 1}</td><td>${item.name}</td><td>${item.score}</td><td>${item.money}</td></tr>`); }
                 overlay.classList.remove('is-hidden');
             } else { overlay.classList.add('is-hidden'); }
         }
         function startFromRanking() { showRanking(false); startGame(); }
-        function resetRanking() { if(confirm("Xóa sạch?")) { localStorage.removeItem('altp_ranking'); showRanking(true); } }
+        function resetRanking() { if(confirm("Xóa bảng xếp hạng?")) { localStorage.removeItem('altp_ranking'); showRanking(true); } }
 
         function startGame() {
-            // 1. Trộn thứ tự câu hỏi
             let shuffledQs = shuffle([...questionsData]);
-            
-            // 2. Trộn vị trí đáp án
             currentQuestions = shuffledQs.map(q => {
-                const correctAnswerText = q.o[q.c];
-                const shuffledOptions = shuffle([...q.o]);
-                const newCorrectIndex = shuffledOptions.indexOf(correctAnswerText);
-                return { q: q.q, o: shuffledOptions, c: newCorrectIndex };
+                const correctAnswerText = q.o[q.c]; const shuffledOptions = shuffle([...q.o]);
+                return { q: q.q, o: shuffledOptions, c: shuffledOptions.indexOf(correctAnswerText) };
             });
-
-            currentQIndex = -1;
-            const spinner = document.getElementById('spinner-screen');
+            currentQIndex = -1; const spinner = document.getElementById('spinner-screen');
             spinner.classList.remove('slide-center'); spinner.classList.add('slide-out-left');
             setTimeout(() => { spinner.classList.add('is-hidden'); nextLevel(); }, 600);
         }
 
         function nextLevel() {
-            currentQIndex++;
-            if (currentQIndex >= currentQuestions.length) { gameOver(true); return; }
+            currentQIndex++; if (currentQIndex >= currentQuestions.length) { gameOver(true); return; }
             if (currentQIndex > 0) showMoneyAnimation(); else showQuizScreenDirectly();
         }
 
         function showMoneyAnimation() {
-            const ms = document.getElementById('money-screen');
-            const qs = document.getElementById('quiz-screen');
+            const ms = document.getElementById('money-screen'); const qs = document.getElementById('quiz-screen');
             qs.classList.add('is-hidden'); qs.classList.remove('slide-center');
-            ms.classList.remove('is-hidden', 'slide-out-left', 'slide-center');
-            ms.classList.add('slide-in-right');
+            ms.classList.remove('is-hidden', 'slide-out-left', 'slide-center'); ms.classList.add('slide-in-right');
+            
+            try { const whoosh = document.getElementById('sound-whoosh'); whoosh.volume = 0.6; whoosh.currentTime = 0; whoosh.play(); } catch(e){}
 
-            document.querySelectorAll('#money-list li').forEach(li => li.classList.remove('active', 'flash'));
-            const prevIdx = currentQIndex - 1;
-            if(prevIdx >= 0) document.querySelector(`li[data-idx="${prevIdx}"]`).classList.add('active');
+            document.querySelectorAll('#money-list li').forEach(li => {
+                li.classList.remove('active', 'jump-slam-anim'); const oldWave = li.querySelector('.ladder-shockwave'); if(oldWave) oldWave.remove();
+            });
+            const cardContainer = document.getElementById('money-card-container');
+            cardContainer.classList.remove('impact-shake');
 
             setTimeout(() => {
                 ms.classList.remove('slide-in-right'); ms.classList.add('slide-center');
                 setTimeout(() => {
-                    if(prevIdx >= 0) document.querySelector(`li[data-idx="${prevIdx}"]`).classList.remove('active');
                     const curLi = document.querySelector(`li[data-idx="${currentQIndex}"]`);
-                    if(curLi) { curLi.classList.add('active', 'flash'); curLi.scrollIntoView({behavior: "smooth", block: "center"}); }
+                    if(curLi) { 
+                        curLi.scrollIntoView({behavior: "smooth", block: "center"});
+                        setTimeout(() => {
+                            curLi.classList.add('jump-slam-anim'); 
+                            
+                            setTimeout(() => {
+                                // PLAY CẢ 2 ÂM THANH: SLAM (Đập đất) + BOOM (Kính vỡ/Vang)
+                                try { 
+                                    const slam = document.getElementById('sound-slam'); slam.volume = 1.0; slam.currentTime = 0; slam.play();
+                                    const boom = document.getElementById('sound-boom'); boom.volume = 0.8; boom.currentTime = 0; boom.play();
+                                } catch(e){}
+                                
+                                cardContainer.classList.add('impact-shake');
+                                createSteamEffect(curLi); 
+                                createLadderSparks(curLi.getBoundingClientRect());
+                                curLi.classList.add('active');
+                                const shock = document.createElement('div'); shock.className = 'ladder-shockwave ladder-shockwave-active';
+                                curLi.appendChild(shock); setTimeout(() => shock.remove(), 600);
+
+                            }, 400); 
+                        }, 300); 
+                    }
                 }, 600);
                 setTimeout(() => {
                     ms.classList.remove('slide-center'); ms.classList.add('slide-out-left');
-                    setTimeout(() => { ms.classList.add('is-hidden'); ms.classList.remove('slide-out-left'); showQuizScreenDirectly(); }, 3000);
-                }, 5000);
+                    setTimeout(() => { ms.classList.add('is-hidden'); ms.classList.remove('slide-out-left'); showQuizScreenDirectly(); }, 1500); 
+                }, 4500);
             }, 50);
         }
 
         function showQuizScreenDirectly() {
-            const qs = document.getElementById('quiz-screen');
-            loadQuestionUI();
-            qs.classList.remove('is-hidden', 'slide-out-left', 'slide-center');
-            qs.classList.add('slide-in-right');
+            const qs = document.getElementById('quiz-screen'); loadQuestionUI();
+            qs.classList.remove('is-hidden', 'slide-out-left', 'slide-center'); qs.classList.add('slide-in-right');
             setTimeout(() => { qs.classList.remove('slide-in-right'); qs.classList.add('slide-center'); }, 50);
         }
-
         function loadQuestionUI() {
-            isLocked = false;
-            const q = currentQuestions[currentQIndex];
+            isLocked = false; const q = currentQuestions[currentQIndex];
             document.getElementById('question-text').textContent = q.q;
-            const grid = document.getElementById('answers-container');
-            grid.innerHTML = '';
+            const grid = document.getElementById('answers-container'); grid.innerHTML = '';
             const labels = ["A", "B", "C", "D"];
             q.o.forEach((opt, i) => {
-                const btn = document.createElement('button');
-                btn.className = 'answer-btn';
-                btn.innerHTML = `<span>${labels[i]}:</span> ${opt}`;
-                btn.onclick = () => checkAnswer(i, q.c, btn);
-                grid.appendChild(btn);
+                const btn = document.createElement('button'); btn.className = 'answer-btn';
+                btn.innerHTML = `<span>${labels[i]}:</span> ${opt}`; btn.onclick = () => checkAnswer(i, q.c, btn); grid.appendChild(btn);
             });
             const btn5050 = document.getElementById('btn-5050');
             if(btn5050.dataset.used === "true") { btn5050.disabled = true; btn5050.style.opacity = 0.5; } 
-            else { btn5050.disabled = false; btn5050.style.opacity = 1; }
+            else { btn5050.disabled = false; btn5050.style.opacity = 1; btn5050.dataset.used = "false"; }
         }
-
         function checkAnswer(idx, correct, btn) {
             if(isLocked) return; isLocked = true;
             if (idx === correct) {
-                btn.classList.add('correct');
-                try { document.getElementById('sound-correct').play(); } catch(e){}
+                btn.classList.add('correct'); try { document.getElementById('sound-correct').play(); } catch(e){}
                 setTimeout(() => {
-                    const qs = document.getElementById('quiz-screen');
-                    qs.classList.remove('slide-center'); qs.classList.add('slide-out-left');
+                    const qs = document.getElementById('quiz-screen'); qs.classList.remove('slide-center'); qs.classList.add('slide-out-left');
                     setTimeout(() => { qs.classList.add('is-hidden'); nextLevel(); }, 800);
                 }, 2000);
             } else {
-                btn.classList.add('incorrect');
-                document.querySelectorAll('.answer-btn')[correct].classList.add('correct');
-                try { document.getElementById('sound-wrong').play(); } catch(e){}
-                setTimeout(() => gameOver(false), 2500);
+                btn.classList.add('incorrect'); document.querySelectorAll('.answer-btn')[correct].classList.add('correct');
+                try { document.getElementById('sound-wrong').play(); } catch(e){} setTimeout(() => gameOver(false), 2500);
             }
         }
-
         function gameOver(isWin) {
             let prize = "0"; let safeIndex = -1; const reachedIndex = currentQIndex - 1;
             if (isWin) prize = moneyLevels[moneyLevels.length - 1];
-            else {
-                for(let i = safeLevels.length - 1; i >= 0; i--) { if (reachedIndex >= safeLevels[i]) { safeIndex = safeLevels[i]; break; } }
-                if (safeIndex !== -1) prize = moneyLevels[safeIndex];
-            }
+            else { for(let i = safeLevels.length - 1; i >= 0; i--) { if (reachedIndex >= safeLevels[i]) { safeIndex = safeLevels[i]; break; } } if (safeIndex !== -1) prize = moneyLevels[safeIndex]; }
             let data = JSON.parse(localStorage.getItem('altp_ranking') || '[]');
             data.push({ name: currentPlayer, score: `${isWin ? currentQuestions.length : currentQIndex}/${currentQuestions.length}`, money: prize });
             data.sort((a, b) => parseInt(b.money.replace(/\./g,'')) - parseInt(a.money.replace(/\./g,'')));
             localStorage.setItem('altp_ranking', JSON.stringify(data));
-
-            const resOverlay = document.getElementById('result-overlay');
-            const titleEl = document.getElementById('res-title');
-            if (isWin) { titleEl.textContent = "VÔ ĐỊCH!"; titleEl.style.color = "#00ff00"; } 
-            else { titleEl.textContent = "DỪNG CUỘC CHƠI"; titleEl.style.color = "#ff4444"; }
-            document.getElementById('res-name').textContent = currentPlayer;
+            
+            const resOverlay = document.getElementById('result-overlay'); const titleEl = document.getElementById('res-title');
+            if (isWin) { titleEl.textContent = "VÔ ĐỊCH!"; titleEl.style.color = "#00ff00"; titleEl.style.textShadow = "0 0 20px #00ff00"; } 
+            else { titleEl.textContent = "DỪNG CUỘC CHƠI"; titleEl.style.color = "#ff3333"; titleEl.style.textShadow = "0 0 20px #ff0000"; }
+            
+            document.getElementById('res-name').textContent = currentPlayer; 
             document.getElementById('res-score').textContent = `Kết quả: Đúng ${isWin ? currentQuestions.length : currentQIndex} câu`;
             document.getElementById('res-money').textContent = prize + " VNĐ";
-            document.getElementById('quiz-screen').classList.add('is-hidden');
-            resOverlay.classList.remove('is-hidden');
+            document.getElementById('quiz-screen').classList.add('is-hidden'); resOverlay.classList.remove('is-hidden');
+            document.getElementById('btn-5050').dataset.used = "false";
         }
-
         function use5050() {
-            const btn = document.getElementById('btn-5050');
-            if(isLocked || btn.disabled) return;
-            const q = currentQuestions[currentQIndex];
-            const btns = document.querySelectorAll('.answer-btn');
+            const btn = document.getElementById('btn-5050'); if(isLocked || btn.disabled) return;
+            const q = currentQuestions[currentQIndex]; const btns = document.querySelectorAll('.answer-btn');
             let wrongs = [0,1,2,3].filter(i => i !== q.c).sort(()=>Math.random()-0.5);
             wrongs.slice(0,2).forEach(i => btns[i].classList.add('removed'));
             btn.disabled = true; btn.style.opacity = 0.5; btn.dataset.used = "true";
