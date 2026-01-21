@@ -523,37 +523,97 @@
         const baseMoneyLevels = ["200.000", "400.000", "600.000", "1.000.000", "2.000.000", "3.000.000", "6.000.000", "10.000.000", "14.000.000", "22.000.000", "30.000.000", "40.000.000", "60.000.000", "85.000.000", "150.000.000"];
         let moneyLevels = [], safeLevels = []; 
         const questionsData = [
-            { q: "Tác phẩm “Muối của rừng” được viết bởi tác giả nào?", o: ["Tô Hoài", "Nguyễn Minh Châu", "Nguyễn Huy Thiệp", "Ma Văn Kháng"], c: 2 },
-            { q: "Nghề nghiệp của ông Diểu là gì?", o: ["Chăn thả gia súc", "Làm nương rẫy", "Đi săn", "Làm gỗ"], c: 2 },
-            { q: "Loài vật xuất hiện trong truyện là gì?", o: ["Khỉ", "Vượn", "Hổ", "Nai"], c: 1 },
-            { q: "Sự kiện mở đầu truyện là gì?", o: ["Trận cháy rừng", "Ông Diểu về bản", "Ông Diểu gặp con vượn đực", "Vượn cái cứu ông Diểu"], c: 2 },
-            { q: "Vì sao con vượn đực chết?", o: ["Bị thú rừng tấn công", "Bị lửa thiêu", "Bị người dân bắn", "Bị ông Diểu bắn nhầm"], c: 3 },
-            { q: "Con vượn cái đã làm gì khi thấy con vượn đực chết?", o: ["Tấn công ông Diểu", "Tru lên đau đớn và ôm xác bạn", "Bỏ chạy vào rừng", "Kêu gọi đàn vượn khác"], c: 1 },
-            { q: "Con vượn cái đã phá điều gì của ông Diểu?", o: ["Lều trú", "Hòm đồ", "Bẫy thú", "Súng"], c: 2 },
-            { q: "Cao trào của truyện là sự kiện nào?", o: ["Con vượn cái phá bẫy", "Cháy rừng và vượn cứu người", "Ông Diểu đặt bẫy", "Vượn cái nhìn ông Diểu"], c: 1 },
-            { q: "“Muối của rừng” trong truyện có ý nghĩa biểu tượng cho:", o: ["Thức ăn của thú rừng", "Bệnh rừng", "Giá trị tinh thần từ thiên nhiên", "Một loại cây đặc biệt"], c: 2 },
-            { q: "Truyện ngắn thuộc thể loại:", o: ["Hồi kí", "Tùy bút", "Truyện ngắn hiện đại", "Kí sự"], c: 2 },
-            { q: "Hành động phá bẫy của vượn cái thể hiện điều gì?", o: ["Sự thù hằn muốn giết người", "Sự thông minh và cảnh báo", "Sự hoảng loạn", "Bản năng sinh tồn"], c: 1 },
-            { q: "Vì sao ông Diểu cảm thấy tội lỗi?", o: ["Vì mất đồ", "Vì nghĩ mình đặt bẫy sai", "Vì bắn chết con vượn đực vô cớ", "Vì bị vượn cái theo dõi"], c: 2 },
-            { q: "Trong truyện, thiên nhiên được khắc họa chủ yếu bằng biện pháp nào?", o: ["Nhân hóa", "So sánh", "Hoán dụ", "Nói quá"], c: 0 },
-            { q: "Sự hi sinh của vượn cái cho thấy phẩm chất gì?", o: ["Con vật có lòng bao dung", "Con vật ngu ngốc", "Con vật hung hãn", "Con vật thích báo thù"], c: 0 },
-            { q: "Tư tưởng chủ đạo của tác phẩm là gì?", o: ["Khuyên con người ăn chay", "Phê phán các thợ săn", "Tôn vinh muối của rừng", "Ca ngợi thiên nhiên và lương tri"], c: 3 },
-            { q: "Ý nghĩa của tình huống truyện “con vật cứu kẻ giết bạn mình”:", o: ["Tạo không khí hài hước", "Tạo bước ngoặt nhận thức", "Làm tăng số lượng nhân vật", "Kéo dài diễn biến"], c: 1 },
-            { q: "Vì sao rừng được gọi là “một thế giới vừa gắn bó vừa xa lạ”?", o: ["Vì ông Diểu không hiểu hết rừng", "Vì rừng không có sự sống", "Vì rừng luôn chào đón con người", "Vì rừng toàn thú dữ"], c: 0 },
-            { q: "Hình ảnh vượn cái nhìn ông Diểu từ xa mang ý nghĩa:", o: ["Rình tấn công", "Muốn kết bạn", "Sự đau đớn và trách móc", "Sợ hãi"], c: 2 },
-            { q: "Tại sao truyện có tên “Muối của rừng”?", o: ["Vì rừng có muối thật", "Vì muối là thức ăn cho thú", "Tượng trưng cho giá trị nhân bản", "Vì ông Diểu đi lấy muối"], c: 2 },
-            { q: "Truyện khắc họa sự đổi thay nào ở ông Diểu?", o: ["Từ tự tin → kiêu ngạo", "Từ vô cảm → nhân tính", "Từ yếu đuối → mạnh mẽ", "Từ giận dữ → vui vẻ"], c: 1 },
-            { q: "Bài học lớn nhất mà ông Diểu nhận ra là gì?", o: ["Rừng nhiều thú dữ", "Người thợ săn phải bắn chính xác", "Thiên nhiên có tình nghĩa", "Không nên đi rừng một mình"], c: 2 },
-            { q: "Nếu thiếu tình huống con vượn cứu người, truyện mất yếu tố gì?", o: ["Cao trào và giá trị nhân văn", "Sự xuất hiện của dân bản", "Mâu thuẫn kịch tính", "Miêu tả rừng"], c: 0 },
-            { q: "Tác phẩm gửi đến thông điệp nào cho con người?", o: ["Cần mạnh mẽ trước thiên nhiên", "Sống hòa hợp, tôn trọng muôn loài", "Săn bắt để tồn tại", "Nên dùng nhiều bẫy hơn"], c: 1 },
-            { q: "Sự đối lập giữa “giết” và “cứu” nhằm nhấn mạnh:", o: ["Sự may mắn của ông Diểu", "Quy luật báo ứng", "Sức mạnh của lòng bao dung", "Quy luật tự nhiên"], c: 2 },
-            { q: "Vượn cái có thể được xem như biểu tượng của:", o: ["Sự trả thù của tự nhiên", "Sự hủy diệt thiên nhiên", "Lòng nhân ái của thiên nhiên", "Sự hoảng loạn của loài vật"], c: 2 },
-            { q: "Hành động vượn cái phá bẫy có thể hiểu là:", o: ["Lời cảnh báo cho ông Diểu", "Muốn phá rừng", "Tính nghịch ngợm của vượn", "Sự nông nổi của nó"], c: 0 },
-            { q: "Chọn nhận xét đúng nhất về nhân vật ông Diểu:", o: ["Ông là người độc ác", "Ông vô cảm từ đầu đến cuối", "Biết thức tỉnh và hối lỗi", "Ông thù hằn loài vượn"], c: 2 },
-            { q: "Dòng nào nói đúng nhất về ý nghĩa của truyện?", o: ["Khẳng định sức mạnh con người", "Sự giao cảm người và thiên nhiên", "Phê phán thú dữ rừng xanh", "Ca ngợi săn bắn"], c: 1 },
-            { q: "Chi tiết vượn cái hi sinh cho thấy thông điệp gì?", o: ["Rừng cần được bảo vệ", "Rừng không quan trọng", "Rừng nên bị khai thác nhanh hơn", "Rừng chỉ dành cho thú"], c: 0 },
-            { q: "Tên truyện “Muối của rừng” giúp hiểu rằng:", o: ["Thiên nhiên có vị mặn thật", "Rừng là nơi nguy hiểm", "Rừng dạy giá trị tinh thần bền vững", "Đi rừng phải mang theo muối"], c: 2 }
-        ];
+  {
+    q: "Đáp án nào này dưới đây không phải là quan điểm sáng tác của Chủ tịch Hồ Chí Minh?",
+    o: [
+      "Luôn chú trọng đến mục đích và đối tượng tiếp nhận để quyết định nội dung và hính thức của tác phẩm.",
+      "Luôn chú trọng tính chân thực và tính dân tộc",
+      "Quan điểm nghệ thuật “vị nghệ thuật”",
+      "Coi văn học là vũ khí chiến đấu phục vụ cho sự nghiệp Cách Mạng."
+    ],
+    c: 2
+  },
+  {
+    q: "Bác Hồ ra đi tìm đường cứu nước năm nào?",
+    o: [
+      "1930",
+      "1923",
+      "1911",
+      "1912"
+    ],
+    c: 2
+  },
+  {
+    q: "Tác phẩm nào là tác phẩm văn chính luận của Chủ tịch Hồ Chí Minh?",
+    o: [
+      "“Vi hành”",
+      "“Pari”",
+      "“Con người biết mùi hun khói”",
+      "“Bản án chế độ thực dân Pháp”"
+    ],
+    c: 3
+  },
+  {
+    q: "Dòng nào dưới đây không phù hợp với phong cách văn chính luận của Chủ tịch Hồ Chí Minh?",
+    o: [
+      "Ngôn ngữ trau chuốt, bỏng bẩy.",
+      "Kết hợp nhuần nhuyễn mạch lí luận với mạch cảm xúc.",
+      "Giàu tính luận chiến.",
+      "Giọng điệu uyển chuyển."
+    ],
+    c: 0
+  },
+  {
+    q: "Tại sao nói phong cách nghệ thuật của Chủ tịch Hồ Chí Minh đa dạng?",
+    o: [
+      "Đa dạng mục đích sáng tác.",
+      "Đa dạng trong quan điểm sáng tác.",
+      "Đa dạng các thể loại.",
+      "Đa dạng nguyên tắc sáng tác."
+    ],
+    c: 2
+  },
+  {
+    q: "Đáp án nào dưới đây không phải là quan điểm sáng tác của chủ tịch Hồ Chí Minh?",
+    o: [
+      "Văn học là vũ khí chiến đấu",
+      "Chú trọng tính dân tộc",
+      "Nghệ thuật phục vụ cho nghệ thuật",
+      "Nghệ thuật phải phục vụ cho con người"
+    ],
+    c: 2
+  },
+  {
+    q: "Tác phẩm “Không có gì quý hơn độc lập tự do” của Chủ tịch Hồ Chí Minh thuộc thể loại nào?",
+    o: [
+      "Truyện",
+      "Văn chính luận",
+      "Kí",
+      "Thơ"
+    ],
+    c: 1
+  },
+  {
+    q: "Tác phẩm “Lời kêu gọi toàn quốc kháng chiến” ra đời năm nào?",
+    o: [
+      "1945",
+      "1930",
+      "1946",
+      "1932"
+    ],
+    c: 2
+  },
+  {
+    q: "Thơ ca của Bác thường có đặc điểm gì?",
+    o: [
+      "Mộc mạc, giản dị",
+      "Trau chuốt, tài hoa",
+      "Tráng lệ, vĩ đại",
+      "Tất cả các đáp án trên"
+    ],
+    c: 0
+  }
+];
 
         let currentPlayer = "", currentQIndex = -1, currentQuestions = [], isLocked = false, sparkInterval, emberInterval;
         let isWinnerWaitState = false; 
